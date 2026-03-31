@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Life — Aldenmere University</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="assets/shared.css" rel="stylesheet" />
+  <style>
+    /* ── Enrolment stats grid ─────────────────────── */
+    .enrolment-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px; background: var(--border);
+    }
+    @media (min-width:768px) { .enrolment-grid { grid-template-columns: repeat(4, 1fr); } }
+    .enrolment-cell {
+      background: var(--white); padding: 1.75rem 1.25rem; text-align: center;
+    }
+    .enrolment-num {
+      font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700; color: var(--navy); line-height: 1;
+    }
+    .enrolment-lbl {
+      font-family: var(--font-body); font-size: .72rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--text-light); margin-top: .4rem;
+    }
+
+    /* ── Donut chart legend ───────────────────────── */
+    .donut-wrap {
+      position: relative; width: 200px; height: 200px; margin: 0 auto;
+    }
+    .donut-svg { transform: rotate(-90deg); }
+    .donut-text {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .donut-text-num { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--navy); line-height: 1; }
+    .donut-text-lbl { font-family: var(--font-body); font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-light); }
+    .legend-item {
+      display: flex; align-items: center; gap: .65rem;
+      font-family: var(--font-body); font-size: .9rem; color: var(--text-mid);
+      margin-bottom: .5rem;
+    }
+    .legend-dot { width: 12px; height: 12px; flex-shrink: 0; border-radius: 50%; }
+
+    /* ── Life cards ───────────────────────────────── */
+    .life-card {
+      background: var(--white); border: 1px solid var(--border);
+      padding: 2rem; height: 100%;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .life-card:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); transform: translateY(-4px); }
+    .life-icon {
+      width: 52px; height: 52px;
+      background: var(--navy); color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.25rem;
+    }
+    .life-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: .6rem; }
+    .life-text { font-family: var(--font-body); font-size: .95rem; color: var(--text-mid); line-height: 1.75; }
+
+    /* ── Testimonials ─────────────────────────────── */
+    .testimonial-card {
+      background: var(--navy); padding: 2.5rem;
+      position: relative; overflow: hidden;
+    }
+    .testimonial-card::before {
+      content: '"'; position: absolute; top: -1.5rem; left: 1.5rem;
+      font-family: var(--font-display); font-size: 9rem; line-height: 1;
+      color: rgba(184,145,42,.1); pointer-events: none;
+    }
+    .testimonial-text {
+      font-family: var(--font-display); font-size: clamp(1rem, 2vw, 1.3rem);
+      font-style: italic; color: rgba(255,255,255,.88);
+      line-height: 1.65; position: relative; z-index: 1;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: .9rem; margin-top: 1.5rem; }
+    .author-avatar { width: 46px; height: 46px; background: var(--navy-light); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.3); font-size: 1.1rem; flex-shrink: 0; }
+    .author-name { font-family: var(--font-display); font-size: .95rem; font-weight: 600; color: var(--white); }
+    .author-detail { font-family: var(--font-body); font-size: .8rem; color: var(--gold); font-style: italic; }
+
+    /* ── International bar ────────────────────────── */
+    .country-bar { margin-bottom: 1rem; }
+    .country-name { font-family: var(--font-body); font-size: .9rem; color: var(--navy); margin-bottom: .3rem; display: flex; justify-content: space-between; }
+    .country-name span { color: var(--gold); font-weight: 600; }
+    .bar-track { background: var(--cream-dark); height: 6px; border-radius: 0; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 1s ease; }
+
+    /* ── Support services ─────────────────────────── */
+    .service-row {
+      display: flex; align-items: flex-start; gap: 1.25rem;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+    }
+    .service-row:last-child { border-bottom: none; }
+    .service-icon { width: 40px; height: 40px; flex-shrink: 0; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1rem; }
+    .service-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: .2rem; }
+    .service-desc { font-family: var(--font-body); font-size: .9rem; color: var(--text-mid); line-height: 1.65; }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand-wrap" href="index.html">
+      <span class="brand-name">Aldenmere</span>
+      <span class="brand-est">Est. 1847 · Cambridge</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="courses.html" data-page="courses.html">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="faculty.html" data-page="faculty.html">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="students.html" data-page="students.html">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="events.html" data-page="events.html">Events</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link nav-cta" href="#">Apply Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ════════════════════════════════════ -->
+<header class="page-header">
+  <div class="page-header-bg-text">STUDENTS</div>
+  <div class="container">
+    <div class="breadcrumb-nav"><a href="index.html">Home</a><span>/</span>Student Life</div>
+    <h1 class="page-title">Student <em>Life</em></h1>
+    <p class="page-subtitle">24,800 students from 160 countries — one community defined by curiosity, ambition, and belonging.</p>
+  </div>
+</header>
+
+<!-- ══ SUB-NAV ═════════════════════════════════════════ -->
+<nav class="sub-nav">
+  <div class="container">
+    <div class="sub-nav-inner">
+      <a href="#enrolment" class="sub-nav-link active">Enrolment</a>
+      <a href="#life" class="sub-nav-link">Campus Life</a>
+      <a href="#international" class="sub-nav-link">International</a>
+      <a href="#support" class="sub-nav-link">Support</a>
+      <a href="#voices" class="sub-nav-link">Student Voices</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ ENROLMENT ══════════════════════════════════════ -->
+<section id="enrolment" style="padding:5rem 0; background:var(--cream);">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">By the Numbers</span>
+        <h2 class="section-heading dark">Our Student<br><em style="color:var(--gold);font-style:italic;">Community</em></h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.8;margin-top:1rem;font-size:1.05rem;">Aldenmere is home to a remarkably diverse global community. These figures reflect academic year 2025–26 enrolment data, as published in our annual Transparency Return.</p>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="enrolment-grid reveal">
+      <div class="enrolment-cell"><div class="enrolment-num">24,800</div><div class="enrolment-lbl">Total Students</div></div>
+      <div class="enrolment-cell"><div class="enrolment-num">13,400</div><div class="enrolment-lbl">Undergraduate</div></div>
+      <div class="enrolment-cell"><div class="enrolment-num">8,600</div><div class="enrolment-lbl">Postgraduate Taught</div></div>
+      <div class="enrolment-cell"><div class="enrolment-num">2,800</div><div class="enrolment-lbl">Doctoral Researchers</div></div>
+    </div>
+
+    <div class="row g-5 mt-3 align-items-center">
+      <!-- Donut: by faculty -->
+      <div class="col-lg-5 reveal">
+        <h4 style="font-family:var(--font-display);font-size:1.2rem;color:var(--navy);margin-bottom:1.5rem;">Enrolment by Faculty</h4>
+        <div class="donut-wrap mb-3">
+          <svg class="donut-svg" width="200" height="200" viewBox="0 0 200 200">
+            <!-- Circumference = 2π × 70 ≈ 440 -->
+            <!-- Engineering 22% → 96.8, offset 0 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#0b1929" stroke-width="28" stroke-dasharray="96.8 343.2" stroke-dashoffset="0"/>
+            <!-- Medicine 20% → 88, offset -96.8 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#b8912a" stroke-width="28" stroke-dasharray="88 352" stroke-dashoffset="-96.8"/>
+            <!-- Business 18% → 79.2, offset -184.8 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#1a3358" stroke-width="28" stroke-dasharray="79.2 360.8" stroke-dashoffset="-184.8"/>
+            <!-- Humanities 15% → 66 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#d4aa4a" stroke-width="28" stroke-dasharray="66 374" stroke-dashoffset="-264"/>
+            <!-- Law 13% → 57.2 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#4a3f2f" stroke-width="28" stroke-dasharray="57.2 382.8" stroke-dashoffset="-330"/>
+            <!-- Sciences 12% → 52.8 -->
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#8a7d6a" stroke-width="28" stroke-dasharray="52.8 387.2" stroke-dashoffset="-387.2"/>
+          </svg>
+          <div class="donut-text">
+            <div class="donut-text-num">14</div>
+            <div class="donut-text-lbl">Faculties</div>
+          </div>
+        </div>
+        <div>
+          <div class="legend-item"><div class="legend-dot" style="background:#0b1929;"></div>Engineering &amp; Computing (22%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#b8912a;"></div>Medical Sciences (20%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#1a3358;"></div>Business School (18%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d4aa4a;"></div>Arts &amp; Humanities (15%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4a3f2f;"></div>Law &amp; Governance (13%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#8a7d6a;"></div>Natural Sciences (12%)</div>
+        </div>
+      </div>
+
+      <!-- Additional stats -->
+      <div class="col-lg-7 reveal reveal-delay-2">
+        <h4 style="font-family:var(--font-display);font-size:1.2rem;color:var(--navy);margin-bottom:1.5rem;">Profile &amp; Outcomes</h4>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div style="background:var(--navy);padding:1.5rem;height:100%;">
+              <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--gold-light);">38%</div>
+              <div style="font-family:var(--font-body);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.3rem;">International Students</div>
+              <div style="font-family:var(--font-body);font-size:.88rem;color:rgba(255,255,255,.5);margin-top:.6rem;line-height:1.6;">From 160 countries, our international cohort enriches every seminar, lab, and common room.</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div style="background:var(--gold-pale);padding:1.5rem;height:100%;border:1px solid var(--border);">
+              <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">94%</div>
+              <div style="font-family:var(--font-body);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);margin-top:.3rem;">Graduate Employment</div>
+              <div style="font-family:var(--font-body);font-size:.88rem;color:var(--text-mid);margin-top:.6rem;line-height:1.6;">Of graduates in employment or further study within 15 months of graduation. (HESA DLHE, 2025)</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div style="background:var(--white);padding:1.5rem;height:100%;border:1px solid var(--border);">
+              <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">76%</div>
+              <div style="font-family:var(--font-body);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);margin-top:.3rem;">First / 2:1 Honours</div>
+              <div style="font-family:var(--font-body);font-size:.88rem;color:var(--text-mid);margin-top:.6rem;line-height:1.6;">Percentage of UG students achieving a First or Upper Second Class degree. (2024–25)</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div style="background:var(--white);padding:1.5rem;height:100%;border:1px solid var(--border);">
+              <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">£8,400</div>
+              <div style="font-family:var(--font-body);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);margin-top:.3rem;">Bursaries Awarded</div>
+              <div style="font-family:var(--font-body);font-size:.88rem;color:var(--text-mid);margin-top:.6rem;line-height:1.6;">Average financial support package for eligible home undergraduate students from lower-income households.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CAMPUS LIFE ═════════════════════════════════════ -->
+<section id="life" style="padding:5rem 0; background:var(--cream-dark);">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Campus Life</span>
+        <h2 class="section-heading dark">More Than<br><em style="color:var(--gold);font-style:italic;">a Degree</em></h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:1.05rem;line-height:1.8;margin-top:1rem;">From world-class sports facilities to a thriving arts scene, life at Aldenmere is designed to challenge and delight at every turn.</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-house-heart-fill"></i></div>
+          <div class="life-title">Accommodation</div>
+          <p class="life-text">Guaranteed accommodation for all first-year and international students across eight residential colleges. Single en-suite and catered options available. 98% of students live within 10 minutes of their faculty building.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-trophy-fill"></i></div>
+          <div class="life-title">Sport &amp; Fitness</div>
+          <p class="life-text">Over 50 sports clubs from rowing and rugby to fencing and water polo. The Aldenmere Sports Centre features an Olympic pool, climbing wall, and strength &amp; conditioning suite open 06:00–23:00 daily.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-music-note-beamed"></i></div>
+          <div class="life-title">Arts &amp; Culture</div>
+          <p class="life-text">The Aldenmere Arts Centre hosts 200+ performances per year. Join the symphony orchestra, chamber choir, jazz ensemble, or one of six dramatic societies. All levels warmly welcomed.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-people-fill"></i></div>
+          <div class="life-title">Clubs &amp; Societies</div>
+          <p class="life-text">More than 180 student-led societies: academic, political, cultural, social, and entrepreneurial. The annual Societies Fair in October is a highlight of the freshers' week calendar.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-shop"></i></div>
+          <div class="life-title">Student Union</div>
+          <p class="life-text">AUSU (Aldenmere University Students' Union) operates three bars, a café, a food bank, a nightclub, and advocacy services. Elected sabbatical officers represent students at every level of University governance.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="life-card">
+          <div class="life-icon"><i class="bi bi-lightbulb-fill"></i></div>
+          <div class="life-title">Entrepreneurship Hub</div>
+          <p class="life-text">The Aldenmere Entrepreneurship Hub offers seed funding (up to £25,000), mentorship from 80+ alumni founders, co-working space, and a structured 12-week startup accelerator each spring.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INTERNATIONAL ═══════════════════════════════════ -->
+<section id="international" style="padding:5rem 0; background:var(--navy);">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-6 reveal">
+        <span class="section-label" style="color:var(--gold);">International Students</span>
+        <h2 class="section-heading light">A Truly <em>Global</em><br>Community</h2>
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.55);line-height:1.8;margin-top:1rem;font-size:1rem;">38% of Aldenmere students come from outside the UK — representing every continent and over 160 nations. Our International Student Advisory Service provides visa guidance, pre-arrival support, and an orientation programme designed to help students settle in quickly and thrive.</p>
+        <div class="mt-3 d-flex gap-3 flex-wrap">
+          <a href="#" class="btn-gold" style="font-size:.8rem;">International Admissions</a>
+          <a href="#" class="btn-ghost-white" style="font-size:.8rem;">Visa Guidance</a>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <h4 style="font-family:var(--font-display);font-size:1.1rem;color:var(--white);margin-bottom:1.5rem;">Top Countries of Origin</h4>
+        <div class="country-bar"><div class="country-name">China <span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">United States <span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">India <span>9%</span></div><div class="bar-track"><div class="bar-fill" style="width:9%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">Germany <span>6%</span></div><div class="bar-track"><div class="bar-fill" style="width:6%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">Nigeria <span>5%</span></div><div class="bar-track"><div class="bar-fill" style="width:5%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">Singapore <span>4%</span></div><div class="bar-track"><div class="bar-fill" style="width:4%;"></div></div></div>
+        <div class="country-bar"><div class="country-name">Canada <span>4%</span></div><div class="bar-track"><div class="bar-fill" style="width:4%;"></div></div></div>
+        <div style="font-family:var(--font-body);font-size:.8rem;color:rgba(255,255,255,.3);font-style:italic;margin-top:.75rem;">+ 153 other countries. Figures: 2025–26 HESA return.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SUPPORT SERVICES ════════════════════════════════ -->
+<section id="support" style="padding:5rem 0; background:var(--cream);">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 reveal">
+        <span class="section-label">Student Support</span>
+        <h2 class="section-heading dark">We're Here<br><em style="color:var(--gold);font-style:italic;">For You</em></h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:1rem;line-height:1.8;margin-top:1rem;">Aldenmere takes student wellbeing seriously. Every student has a personal tutor, and a comprehensive network of professional services is available on campus and online — confidential, free of charge.</p>
+        <div class="mt-3">
+          <a href="#" class="btn-outline-navy">Student Support Portal</a>
+        </div>
+      </div>
+      <div class="col-lg-8 reveal reveal-delay-2">
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-heart-fill"></i></div>
+          <div>
+            <div class="service-title">Counselling &amp; Mental Health</div>
+            <div class="service-desc">Free individual counselling (up to 12 sessions per year), group therapy, and crisis support via a 24/7 helpline. Same-week appointments guaranteed for urgent needs.</div>
+          </div>
+        </div>
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-capsule-pill"></i></div>
+          <div>
+            <div class="service-title">Health Centre</div>
+            <div class="service-desc">On-campus NHS-registered GP practice, nursing team, and sexual health clinic. All registered Aldenmere students are automatically enrolled. Extended evening and weekend hours.</div>
+          </div>
+        </div>
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-universal-access"></i></div>
+          <div>
+            <div class="service-title">Disability &amp; Inclusion</div>
+            <div class="service-desc">Specialist advisers support students with physical, sensory, mental health, and neurodiverse needs. Reasonable adjustments, note-taking support, and Disabled Students' Allowance guidance.</div>
+          </div>
+        </div>
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-currency-pound"></i></div>
+          <div>
+            <div class="service-title">Financial Aid &amp; Hardship Fund</div>
+            <div class="service-desc">Emergency grants of up to £2,500 for students facing unexpected financial hardship. Long-term bursaries, scholarship top-ups, and free access to the Campus Food Bank.</div>
+          </div>
+        </div>
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-briefcase-fill"></i></div>
+          <div>
+            <div class="service-title">Careers &amp; Employability</div>
+            <div class="service-desc">One-to-one career coaching, CV workshops, employer fairs (50+ companies attending the annual Law &amp; Finance Fair alone), and alumni mentoring. Lifelong access after graduation.</div>
+          </div>
+        </div>
+        <div class="service-row">
+          <div class="service-icon"><i class="bi bi-shield-check-fill"></i></div>
+          <div>
+            <div class="service-title">Safety &amp; Security</div>
+            <div class="service-desc">24-hour campus security, a dedicated Report &amp; Support platform for disclosures of harassment or misconduct, and a fully staffed Student Safety Office.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STUDENT VOICES ══════════════════════════════════ -->
+<section id="voices" style="padding:5rem 0; background:var(--navy-mid);">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <span class="section-label" style="text-align:center;display:block;">Student Voices</span>
+      <h2 class="section-heading light">In Their Own Words</h2>
+    </div>
+    <div class="row g-3">
+      <div class="col-lg-4 reveal">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Aldenmere didn't just give me a degree. It gave me a way of seeing — a habit of mind I draw on every day as a physician and researcher."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Dr. Noa Goldstein</div>
+              <div class="author-detail">MBBS 2019 · Neurologist, King's College London</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal reveal-delay-1">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The research environment here is extraordinary. My supervisors treated me as a peer from my first week. That trust changes everything."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Hiroshi Yamamoto</div>
+              <div class="author-detail">DPhil Physics 2022 · MIT Postdoctoral Fellow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal reveal-delay-2">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The clubs, the debates, the late nights in the library — it formed a network of friendships I still rely on ten years later in the UN."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Fatima Al-Rashid</div>
+              <div class="author-detail">LLM 2023 · UN Legal Affairs Officer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"I arrived knowing no one and speaking English as my third language. The International Student Office made me feel at home within a week."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Yara Mensah</div>
+              <div class="author-detail">BSc Economics 2024 · Graduate Analyst, Goldman Sachs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal reveal-delay-1">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"I was in the rowing club, the philosophy society, and a startup — all at once. Aldenmere makes you believe you can do more than you thought possible."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Marcus Osei</div>
+              <div class="author-detail">MEng Engineering 2021 · Co-founder, Helio Energy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal reveal-delay-2">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"I disclosed my disability during welcome week and had a support plan within days. I never felt like an afterthought — I felt valued."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Caitlin Reeves</div>
+              <div class="author-detail">MA History 2024 · Archivist, National Records of Scotland</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section id="newsletter">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Stay Connected</span>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3.5vw,2.4rem);color:var(--navy);">The Aldenmere Review</h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.75;margin-top:.75rem;">Monthly dispatches for students, alumni, and friends of the University.</p>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" class="newsletter-input" placeholder="Your email address…" />
+          <button class="newsletter-btn">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2"><div class="footer-heading">Discover</div><ul class="footer-links"><li><a href="courses.html">Programmes</a></li><li><a href="faculty.html">Faculty</a></li><li><a href="students.html">Student Life</a></li><li><a href="events.html">Events</a></li><li><a href="index.html">Home</a></li></ul></div>
+    </div>
+    <hr class="footer-divider" />
+    <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+  </div>
+</footer>
+
+<button id="backTop"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/shared.js"></script>
+<script>
+  // Animate bar fills on scroll
+  const bars = document.querySelectorAll('.bar-fill');
+  const barObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.style.width = e.target.style.width; });
+  }, { threshold: 0.5 });
+  bars.forEach(b => barObs.observe(b));
+</script>
+</body>
+</html>

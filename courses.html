@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programmes & Courses — Aldenmere University</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="assets/shared.css" rel="stylesheet" />
+  <style>
+    /* ── Search & Filter Bar ──────────────────────── */
+    .filter-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 0;
+      position: sticky; top: 56px; z-index: 890;
+    }
+    .filter-btn {
+      font-family: var(--font-body); font-size: .78rem;
+      letter-spacing: .15em; text-transform: uppercase;
+      padding: .48rem 1.15rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-mid); cursor: pointer;
+      border-radius: 0; transition: all var(--transition); white-space: nowrap;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--navy); border-color: var(--navy); color: var(--white);
+    }
+
+    /* ── Faculty Section Heading ──────────────────── */
+    .faculty-section-head {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 2.5rem 0 1.5rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1.5rem;
+    }
+    .faculty-section-head:first-of-type { border-top: none; margin-top: 0; }
+    .faculty-icon-wrap {
+      width: 52px; height: 52px; flex-shrink: 0;
+      background: var(--navy); display: flex; align-items: center;
+      justify-content: center; color: var(--gold); font-size: 1.3rem;
+    }
+    .faculty-section-name {
+      font-family: var(--font-display); font-size: 1.6rem;
+      font-weight: 700; color: var(--navy); line-height: 1.2;
+    }
+    .faculty-section-name span {
+      font-family: var(--font-body); font-size: .78rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); display: block; margin-bottom: .2rem;
+    }
+
+    /* ── Course Card ──────────────────────────────── */
+    .course-card {
+      background: var(--white); border: 1px solid var(--border);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      overflow: hidden;
+    }
+    .course-card:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); }
+    .course-card-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+    .course-level {
+      font-family: var(--font-body); font-size: .68rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--white); background: var(--navy);
+      padding: .2rem .65rem; display: inline-block; margin-bottom: .8rem;
+    }
+    .course-level.ug  { background: var(--navy); }
+    .course-level.pg  { background: var(--navy-light); }
+    .course-level.phd { background: #5c3d11; }
+    .course-name {
+      font-family: var(--font-display); font-size: 1.1rem;
+      font-weight: 600; color: var(--navy); line-height: 1.35; margin-bottom: .5rem;
+    }
+    .course-meta {
+      display: flex; flex-wrap: wrap; gap: .6rem .9rem;
+      font-family: var(--font-body); font-size: .78rem; color: var(--text-light);
+    }
+    .course-meta span i { margin-right: .25rem; }
+    .course-card-body { padding: 1rem 1.5rem; }
+    .course-desc {
+      font-family: var(--font-body); font-size: .92rem;
+      color: var(--text-mid); line-height: 1.72;
+    }
+    .course-card-footer {
+      padding: .9rem 1.5rem;
+      border-top: 1px solid var(--cream-dark);
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--cream);
+    }
+    .btn-syllabus {
+      font-family: var(--font-body); font-size: .75rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); background: transparent;
+      border: 1px solid var(--border); padding: .42rem 1rem;
+      cursor: pointer; border-radius: 0;
+      transition: all var(--transition);
+    }
+    .btn-syllabus:hover { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .btn-apply-course {
+      font-family: var(--font-body); font-size: .75rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--white); background: var(--gold);
+      border: none; padding: .42rem 1.1rem; cursor: pointer; border-radius: 0;
+      transition: background var(--transition);
+    }
+    .btn-apply-course:hover { background: var(--gold-light); color: var(--navy); }
+
+    /* ── Syllabus Modal ───────────────────────────── */
+    .syllabus-section-title {
+      font-family: var(--font-display); font-size: 1.05rem;
+      font-weight: 700; color: var(--navy); margin: 1.5rem 0 .75rem;
+      padding-bottom: .5rem; border-bottom: 1px solid var(--border);
+    }
+    .syllabus-section-title:first-child { margin-top: 0; }
+    .outcomes-list {
+      font-family: var(--font-body); font-size: .95rem;
+      color: var(--text-mid); line-height: 1.7; padding-left: 1.25rem;
+    }
+    .outcomes-list li { margin-bottom: .35rem; }
+    .week-table { width: 100%; border-collapse: collapse; font-family: var(--font-body); }
+    .week-table th {
+      background: var(--navy); color: var(--white);
+      font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+      padding: .65rem .9rem; text-align: left; font-weight: 400;
+    }
+    .week-table td { padding: .65rem .9rem; border-bottom: 1px solid var(--cream-dark); font-size: .92rem; color: var(--text-mid); vertical-align: top; }
+    .week-table tr:last-child td { border-bottom: none; }
+    .week-table tr:nth-child(even) td { background: var(--cream); }
+    .week-num { font-family: var(--font-display); font-weight: 700; color: var(--gold); font-size: .88rem; white-space: nowrap; }
+    .assess-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--cream-dark); }
+    .assess-row:last-child { border-bottom: none; }
+    .assess-name { font-family: var(--font-body); font-size: .95rem; color: var(--text-mid); }
+    .assess-pct { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--navy); }
+    .reading-item { font-family: var(--font-body); font-size: .92rem; color: var(--text-mid); line-height: 1.55; padding: .45rem 0; border-bottom: 1px solid var(--cream-dark); font-style: italic; }
+    .reading-item:last-child { border-bottom: none; }
+    .reading-author { font-style: normal; font-weight: 600; color: var(--navy); }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand-wrap" href="index.html">
+      <span class="brand-name">Aldenmere</span>
+      <span class="brand-est">Est. 1847 · Cambridge</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="courses.html" data-page="courses.html">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="faculty.html" data-page="faculty.html">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="students.html" data-page="students.html">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="events.html" data-page="events.html">Events</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link nav-cta" href="#">Apply Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ════════════════════════════════════ -->
+<header class="page-header">
+  <div class="page-header-bg-text">PROGRAMMES</div>
+  <div class="container">
+    <div class="breadcrumb-nav"><a href="index.html">Home</a><span>/</span>Programmes</div>
+    <h1 class="page-title">Academic<br><em>Programmes</em></h1>
+    <p class="page-subtitle">120 undergraduate, postgraduate, and doctoral programmes across 14 faculties — each designed to challenge and inspire.</p>
+  </div>
+</header>
+
+<!-- ══ SUB-NAV ═════════════════════════════════════════ -->
+<nav class="sub-nav">
+  <div class="container">
+    <div class="sub-nav-inner">
+      <a href="#all-courses" class="sub-nav-link active">All Programmes</a>
+      <a href="#law" class="sub-nav-link">Law</a>
+      <a href="#medicine" class="sub-nav-link">Medicine</a>
+      <a href="#engineering" class="sub-nav-link">Engineering</a>
+      <a href="#humanities" class="sub-nav-link">Humanities</a>
+      <a href="#business" class="sub-nav-link">Business</a>
+      <a href="#sciences" class="sub-nav-link">Sciences</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ FILTER & SEARCH ════════════════════════════════ -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="row align-items-center g-2">
+      <div class="col-md-5">
+        <input type="search" class="form-control" placeholder="Search programmes…" data-search-target="course-card" />
+      </div>
+      <div class="col-md-7">
+        <div class="d-flex gap-2 flex-wrap" data-filter-group="level">
+          <button class="filter-btn active" data-filter="all">All Levels</button>
+          <button class="filter-btn" data-filter="ug">Undergraduate</button>
+          <button class="filter-btn" data-filter="pg">Postgraduate</button>
+          <button class="filter-btn" data-filter="phd">Doctoral</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COURSE LISTINGS ════════════════════════════════ -->
+<section id="all-courses" style="padding:3rem 0 6rem; background:var(--cream);">
+  <div class="container">
+
+    <!-- ── LAW ─────────────────────────────────────── -->
+    <div id="law">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-journal-bookmark-fill"></i></div>
+        <div class="faculty-section-name">
+          <span>Faculty</span>Law &amp; Governance
+        </div>
+      </div>
+      <div class="row g-3">
+
+        <!-- Course: Constitutional Law -->
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="constitutional law undergraduate llb 3 years law governance">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">Constitutional &amp; Administrative Law</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>3 Years</span>
+                <span><i class="bi bi-award"></i>LLB Hons</span>
+                <span><i class="bi bi-star"></i>120 Credits/yr</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">A rigorous introduction to the constitutional foundations of the state, separation of powers, judicial review, and the protection of fundamental rights. Students develop analytical skills through moot court and case study work.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-const-law">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course: International Law -->
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-1" data-filter-target="level" data-filter-val="pg" data-search-text="international law postgraduate llm human rights">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level pg">Postgraduate</span>
+              <div class="course-name">International Human Rights Law</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>1 Year</span>
+                <span><i class="bi bi-award"></i>LLM</span>
+                <span><i class="bi bi-star"></i>180 Credits</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Examines the international legal framework for human rights protection — treaty bodies, regional mechanisms, accountability before international tribunals, and the intersection with humanitarian law.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-intl-law">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course: Law PhD -->
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-2" data-filter-target="level" data-filter-val="phd" data-search-text="law doctoral phd research governance">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level phd">Doctoral</span>
+              <div class="course-name">Doctoral Research in Law</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>3–4 Years</span>
+                <span><i class="bi bi-award"></i>PhD</span>
+                <span><i class="bi bi-people"></i>Supervised Research</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Original scholarly research contributing to legal theory or practice. Candidates are assigned a primary and secondary supervisor and participate in the Faculty's thriving research seminar series.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-law-phd">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── MEDICINE ─────────────────────────────────── -->
+    <div id="medicine">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-heart-pulse-fill"></i></div>
+        <div class="faculty-section-name"><span>Faculty</span>Medical Sciences</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="mbbs medicine clinical undergraduate 5 years">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">Medicine (MBBS)</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>5 Years</span>
+                <span><i class="bi bi-award"></i>MBBS</span>
+                <span><i class="bi bi-hospital"></i>Clinical Placement</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Integrates biomedical science with early clinical exposure, leading to two years of clinical practice across Aldenmere Teaching Hospital and partner NHS Trusts. GMC accredited.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-mbbs">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-1" data-filter-target="level" data-filter-val="pg" data-search-text="molecular oncology cancer postgraduate msc research">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level pg">Postgraduate</span>
+              <div class="course-name">Molecular Oncology</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>1 Year</span>
+                <span><i class="bi bi-award"></i>MSc</span>
+                <span><i class="bi bi-star"></i>180 Credits</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Advanced training in cancer biology, genomics, targeted therapies, and clinical trial design. Students undertake a significant laboratory research project in Aldenmere's Cancer Research Institute.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-oncology">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ENGINEERING ──────────────────────────────── -->
+    <div id="engineering">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-gear-wide-connected"></i></div>
+        <div class="faculty-section-name"><span>Faculty</span>Engineering &amp; Computing</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="computer science engineering undergraduate beng 4 years computing">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">Computer Science &amp; Artificial Intelligence</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>4 Years</span>
+                <span><i class="bi bi-award"></i>MEng</span>
+                <span><i class="bi bi-cpu"></i>Industry Year Option</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Covers algorithms, machine learning, systems architecture, and AI ethics. Integrated industry year available. Graduates are in high demand across technology, finance, and public sector.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-cs">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-1" data-filter-target="level" data-filter-val="pg" data-search-text="civil engineering infrastructure postgraduate meng">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level pg">Postgraduate</span>
+              <div class="course-name">Structural &amp; Civil Engineering</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>1 Year</span>
+                <span><i class="bi bi-award"></i>MSc</span>
+                <span><i class="bi bi-building"></i>BIM &amp; Sustainability</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Advanced study in structural analysis, geotechnical engineering, and sustainable infrastructure with a major design project. Accredited by the Institution of Civil Engineers (ICE).</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-civil">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HUMANITIES ───────────────────────────────── -->
+    <div id="humanities">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-book-half"></i></div>
+        <div class="faculty-section-name"><span>Faculty</span>Arts &amp; Humanities</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="history medieval modern undergraduate ba arts humanities">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">History (Medieval &amp; Early Modern)</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>3 Years</span>
+                <span><i class="bi bi-award"></i>BA Hons</span>
+                <span><i class="bi bi-archive"></i>Archive Access</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">From the fall of Rome to the Reformation — students develop close reading of primary sources in Latin and vernacular languages alongside historiographical debate.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-history">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-1" data-filter-target="level" data-filter-val="pg" data-search-text="philosophy ethics postgraduate ma">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level pg">Postgraduate</span>
+              <div class="course-name">Philosophy &amp; Ethics</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>1 Year</span>
+                <span><i class="bi bi-award"></i>MA</span>
+                <span><i class="bi bi-journal-text"></i>Dissertation</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Explores moral philosophy, political theory, philosophy of mind, and applied ethics — from bioethics to AI governance. Weekly research seminars with visiting scholars.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-philosophy">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BUSINESS ─────────────────────────────────── -->
+    <div id="business">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-briefcase-fill"></i></div>
+        <div class="faculty-section-name"><span>Faculty</span>Aldenmere Business School</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="economics finance undergraduate bsc business">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">Economics &amp; Finance</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>3 Years</span>
+                <span><i class="bi bi-award"></i>BSc Hons</span>
+                <span><i class="bi bi-graph-up"></i>Bloomberg Lab</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Combines micro and macroeconomic theory with quantitative finance, financial modelling, and econometrics. Students access a dedicated Bloomberg Terminal lab for live market data.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-economics">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 course-card reveal reveal-delay-1" data-filter-target="level" data-filter-val="pg" data-search-text="mba business administration postgraduate management leadership">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level pg">Postgraduate</span>
+              <div class="course-name">Master of Business Administration</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>1 Year</span>
+                <span><i class="bi bi-award"></i>MBA</span>
+                <span><i class="bi bi-globe2"></i>AACSB Accredited</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">A globally ranked full-time MBA developing ethical leaders through case-method teaching, live consulting projects, and an international study week. 95% placement within 3 months.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-mba">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCIENCES ─────────────────────────────────── -->
+    <div id="sciences">
+      <div class="faculty-section-head">
+        <div class="faculty-icon-wrap"><i class="bi bi-atom"></i></div>
+        <div class="faculty-section-name"><span>Faculty</span>Natural Sciences</div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4 course-card reveal" data-filter-target="level" data-filter-val="ug" data-search-text="physics quantum undergraduate bsc natural sciences">
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-level ug">Undergraduate</span>
+              <div class="course-name">Physics with Quantum Technologies</div>
+              <div class="course-meta">
+                <span><i class="bi bi-clock"></i>4 Years</span>
+                <span><i class="bi bi-award"></i>MPhys</span>
+                <span><i class="bi bi-lightning-charge"></i>Lab Research</span>
+              </div>
+            </div>
+            <div class="course-card-body">
+              <p class="course-desc">Classical and quantum mechanics, electromagnetism, statistical physics, and an advanced quantum technologies track — spanning computing, sensing, and communications.</p>
+            </div>
+            <div class="course-card-footer">
+              <button class="btn-syllabus" data-bs-toggle="modal" data-bs-target="#modal-physics">View Syllabus</button>
+              <button class="btn-apply-course">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+<!-- ══ SYLLABUS MODALS ════════════════════════════════ -->
+
+<!-- Constitutional Law -->
+<div class="modal fade" id="modal-const-law" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div style="font-family:var(--font-body);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;">LLB Hons · 3 Years · 360 Credits</div>
+          <h5 class="modal-title">Constitutional &amp; Administrative Law</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.8;">This programme offers a comprehensive grounding in public law, developing the analytical, research, and advocacy skills required for practice, policy-making, and legal scholarship.</p>
+
+        <div class="syllabus-section-title">Learning Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Analyse the constitutional principles underpinning UK, EU, and comparative legal systems.</li>
+          <li>Critically evaluate the role of judicial review in controlling executive power.</li>
+          <li>Apply statutory interpretation to complex factual scenarios.</li>
+          <li>Construct cogent oral and written legal arguments under time pressure.</li>
+          <li>Engage with primary sources including Acts of Parliament, case law, and treaty texts.</li>
+        </ul>
+
+        <div class="syllabus-section-title">Year 1 — Foundations of Law</div>
+        <table class="week-table">
+          <thead><tr><th style="width:90px;">Term/Week</th><th>Topic</th><th>Method</th></tr></thead>
+          <tbody>
+            <tr><td><span class="week-num">T1 W1–3</span></td><td>Sources of Law; the English Legal System; Parliamentary Sovereignty</td><td>Lecture + Seminar</td></tr>
+            <tr><td><span class="week-num">T1 W4–6</span></td><td>Constitutional Conventions; Rule of Law; Separation of Powers</td><td>Lecture + Moot</td></tr>
+            <tr><td><span class="week-num">T1 W7–8</span></td><td>Prerogative Powers; the Crown and Executive Authority</td><td>Seminar</td></tr>
+            <tr><td><span class="week-num">T2 W1–4</span></td><td>Introduction to Judicial Review: Grounds and Procedure</td><td>Lecture + Case Study</td></tr>
+            <tr><td><span class="week-num">T2 W5–8</span></td><td>Human Rights Act 1998; ECHR Articles and Domestic Application</td><td>Lecture + Seminar</td></tr>
+            <tr><td><span class="week-num">T3</span></td><td>Revision; Formative Moot Problem; Examination Preparation</td><td>Workshop</td></tr>
+          </tbody>
+        </table>
+
+        <div class="syllabus-section-title" style="margin-top:1.5rem;">Year 2 — Substantive Public Law</div>
+        <table class="week-table">
+          <thead><tr><th style="width:90px;">Term/Week</th><th>Topic</th><th>Method</th></tr></thead>
+          <tbody>
+            <tr><td><span class="week-num">T1</span></td><td>Administrative Decision-Making; Procedural Fairness; Legitimate Expectations</td><td>Lecture + Seminar</td></tr>
+            <tr><td><span class="week-num">T2</span></td><td>Proportionality and Rights Review; EU Retained Law; Devolution</td><td>Seminar + Research</td></tr>
+            <tr><td><span class="week-num">T3</span></td><td>Public Law Dissertation Preparation; Elective Module Begins</td><td>Supervisory</td></tr>
+          </tbody>
+        </table>
+
+        <div class="syllabus-section-title" style="margin-top:1.5rem;">Year 3 — Advanced Study &amp; Dissertation</div>
+        <p style="font-family:var(--font-body);font-size:.92rem;color:var(--text-mid);line-height:1.75;">Students complete two advanced elective modules (e.g., International Law, Criminal Justice, Environmental Law) and produce a 12,000-word dissertation on an approved public law topic.</p>
+
+        <div class="syllabus-section-title">Assessment</div>
+        <div>
+          <div class="assess-row"><span class="assess-name">End-of-Year Examinations (Years 1 &amp; 2)</span><span class="assess-pct">50%</span></div>
+          <div class="assess-row"><span class="assess-name">Coursework Essays &amp; Problem Questions</span><span class="assess-pct">25%</span></div>
+          <div class="assess-row"><span class="assess-name">Moot Court Performance</span><span class="assess-pct">10%</span></div>
+          <div class="assess-row"><span class="assess-name">Dissertation (Year 3)</span><span class="assess-pct">15%</span></div>
+        </div>
+
+        <div class="syllabus-section-title">Core Reading</div>
+        <div class="reading-item"><span class="reading-author">Dicey, A.V.</span> — <em>Introduction to the Study of the Law of the Constitution</em> (10th ed.)</div>
+        <div class="reading-item"><span class="reading-author">Wade & Forsyth</span> — <em>Administrative Law</em> (12th ed., OUP)</div>
+        <div class="reading-item"><span class="reading-author">Jowell, Birkinshaw & Le Sueur</span> — <em>De Smith's Judicial Review</em> (8th ed.)</div>
+        <div class="reading-item"><span class="reading-author">Laws LJ</span> — <em>The Common Law Constitution</em> (Cambridge, 2014)</div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Download Full Prospectus (PDF)</a>
+        <button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MBBS Syllabus -->
+<div class="modal fade" id="modal-mbbs" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div style="font-family:var(--font-body);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;">MBBS · 5 Years · GMC Accredited</div>
+          <h5 class="modal-title">Medicine (MBBS)</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.8;">A five-year integrated programme in which biomedical science and early clinical exposure are woven together from Year 1. Years 4–5 are clinical, based at Aldenmere Teaching Hospital and partner NHS Trusts.</p>
+
+        <div class="syllabus-section-title">Learning Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Demonstrate a comprehensive understanding of human anatomy, physiology, and pathology.</li>
+          <li>Perform a systematic clinical history and physical examination across all major specialties.</li>
+          <li>Apply evidence-based medicine principles to diagnostic and therapeutic decision-making.</li>
+          <li>Communicate effectively with patients, families, and multidisciplinary teams.</li>
+          <li>Reflect critically on ethical dilemmas in clinical practice.</li>
+        </ul>
+
+        <div class="syllabus-section-title">Programme Structure</div>
+        <table class="week-table">
+          <thead><tr><th>Year</th><th>Theme</th><th>Key Modules</th></tr></thead>
+          <tbody>
+            <tr><td><span class="week-num">Year 1</span></td><td>Foundations of Medical Science</td><td>Anatomy, Cell Biology, Biochemistry, Introduction to Clinical Method</td></tr>
+            <tr><td><span class="week-num">Year 2</span></td><td>Systems &amp; Disease</td><td>Cardiovascular, Respiratory, GI, Neuroscience, Pharmacology</td></tr>
+            <tr><td><span class="week-num">Year 3</span></td><td>Clinical &amp; Translational</td><td>Pathology, Microbiology, Applied Pharmacology, SSC Project</td></tr>
+            <tr><td><span class="week-num">Year 4</span></td><td>Core Clinical Rotations</td><td>Medicine, Surgery, Paediatrics, Psychiatry, O&amp;G, GP</td></tr>
+            <tr><td><span class="week-num">Year 5</span></td><td>Advanced Clinical Practice</td><td>Sub-specialty Elective, Foundation Preparation, OSCEs</td></tr>
+          </tbody>
+        </table>
+
+        <div class="syllabus-section-title">Assessment</div>
+        <div>
+          <div class="assess-row"><span class="assess-name">Written Examinations (Years 1–3)</span><span class="assess-pct">40%</span></div>
+          <div class="assess-row"><span class="assess-name">OSCEs — Objective Structured Clinical Examinations</span><span class="assess-pct">30%</span></div>
+          <div class="assess-row"><span class="assess-name">Clinical Portfolio &amp; Workplace-Based Assessments</span><span class="assess-pct">20%</span></div>
+          <div class="assess-row"><span class="assess-name">SSC Research Project (Year 3)</span><span class="assess-pct">10%</span></div>
+        </div>
+
+        <div class="syllabus-section-title">Elective Opportunities</div>
+        <p style="font-family:var(--font-body);font-size:.92rem;color:var(--text-mid);line-height:1.75;">All students undertake an 8-week elective in Year 5. Popular destinations include WHO Geneva, MSF field hospitals, and partner universities in the USA, Australia, and South Africa.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Download Full Prospectus (PDF)</a>
+        <button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CS Syllabus -->
+<div class="modal fade" id="modal-cs" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div style="font-family:var(--font-body);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;">MEng · 4 Years · Industry Year Option</div>
+          <h5 class="modal-title">Computer Science &amp; Artificial Intelligence</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.8;">A rigorous MEng programme combining theoretical computer science with hands-on software engineering, machine learning, and AI systems. An optional industry year is available after Year 2.</p>
+
+        <div class="syllabus-section-title">Year 1 Weekly Schedule (Sample)</div>
+        <table class="week-table">
+          <thead><tr><th style="width:80px;">Week</th><th>Topic</th><th>Lab / Project</th></tr></thead>
+          <tbody>
+            <tr><td><span class="week-num">1–2</span></td><td>Introduction to Programming (Python); Computational Thinking</td><td>Python Lab 1: Data Structures</td></tr>
+            <tr><td><span class="week-num">3–4</span></td><td>Discrete Mathematics: Sets, Logic, Proof Techniques</td><td>Problem Set 1</td></tr>
+            <tr><td><span class="week-num">5–6</span></td><td>Algorithms: Sorting, Searching, Complexity Analysis (Big-O)</td><td>Lab: Implementing QuickSort</td></tr>
+            <tr><td><span class="week-num">7–8</span></td><td>Computer Architecture; Memory Hierarchy; Assembly Fundamentals</td><td>x86 Lab</td></tr>
+            <tr><td><span class="week-num">9–10</span></td><td>Operating Systems Concepts; Processes &amp; Threads</td><td>OS Simulation Project</td></tr>
+            <tr><td><span class="week-num">11–12</span></td><td>Introduction to Machine Learning; Linear Models; Gradient Descent</td><td>Scikit-Learn Lab</td></tr>
+            <tr><td><span class="week-num">13</span></td><td>Review; Group Hackathon; Portfolio Submission</td><td>Hackathon</td></tr>
+          </tbody>
+        </table>
+
+        <div class="syllabus-section-title" style="margin-top:1.5rem;">Years 2–4 Highlights</div>
+        <table class="week-table">
+          <thead><tr><th>Year</th><th>Core Modules</th></tr></thead>
+          <tbody>
+            <tr><td><span class="week-num">Year 2</span></td><td>Deep Learning, Databases, Networks &amp; Security, Software Engineering, Statistics</td></tr>
+            <tr><td><span class="week-num">Yr 3 / Ind.</span></td><td>Industry Placement (optional) OR: Computer Vision, NLP, Distributed Systems, Ethics in AI</td></tr>
+            <tr><td><span class="week-num">Year 4</span></td><td>MEng Research Project, Advanced AI Electives, Entrepreneurship Module</td></tr>
+          </tbody>
+        </table>
+
+        <div class="syllabus-section-title">Assessment</div>
+        <div>
+          <div class="assess-row"><span class="assess-name">Written Examinations</span><span class="assess-pct">35%</span></div>
+          <div class="assess-row"><span class="assess-name">Programming Coursework &amp; Labs</span><span class="assess-pct">30%</span></div>
+          <div class="assess-row"><span class="assess-name">Group Project (Year 2)</span><span class="assess-pct">10%</span></div>
+          <div class="assess-row"><span class="assess-name">MEng Research Dissertation (Year 4)</span><span class="assess-pct">25%</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Download Full Prospectus (PDF)</a>
+        <button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stub modals for remaining courses -->
+<div class="modal fade" id="modal-intl-law" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">International Human Rights Law — LLM</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Full syllabus available upon request. This programme covers international treaty regimes, UN mechanisms, regional human rights courts, and a 15,000-word dissertation. Contact the Admissions Office for the detailed course handbook.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-law-phd" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Doctoral Research in Law — PhD</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Candidates develop an original thesis under dual supervision. Research training modules, research ethics, and annual progression reviews are required. Please contact the Graduate Admissions team to discuss a prospective supervisor.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-oncology" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Molecular Oncology — MSc</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Core modules: Cancer Genomics, Drug Discovery &amp; Development, Immunotherapy, Clinical Trial Design. Research project (60 credits) in the Aldenmere Cancer Research Institute.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-civil" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Structural &amp; Civil Engineering — MSc</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Modules: Advanced Structural Analysis, Geotechnics, Sustainable Infrastructure, BIM &amp; Digital Engineering, Major Design Project. ICE accredited for Chartered Engineer status.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-history" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">History (Medieval &amp; Early Modern) — BA Hons</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Year 1: Medieval Europe 500–1300; Year 2: The Later Middle Ages &amp; Reformation (with Latin source reading); Year 3: Dissertation (10,000 words) and two advanced special subjects. Regular visits to the Special Collections archive.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-philosophy" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Philosophy &amp; Ethics — MA</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Modules: Metaethics, Political Philosophy, Philosophy of Mind, Applied Ethics (Bioethics / AI / Global Justice). 15,000-word dissertation with a dedicated supervisor from the Philosophy Department.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-economics" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Economics &amp; Finance — BSc Hons</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Year 1: Micro/Macro Foundations, Quantitative Methods. Year 2: Econometrics, Corporate Finance, International Trade. Year 3: Financial Markets Elective, Applied Research Project or Dissertation.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-mba" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Master of Business Administration — MBA</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Core: Strategy, Leadership, Finance, Operations, Marketing. Electives (choose 3 from 12): FinTech, Social Enterprise, Healthcare Management, Entrepreneurship, etc. Live consulting project with a FTSE 100 partner company.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<div class="modal fade" id="modal-physics" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Physics with Quantum Technologies — MPhys</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p style="font-family:var(--font-body);line-height:1.8;color:var(--text-mid);">Year 1–2: Classical Mechanics, Electromagnetism, Quantum Mechanics, Statistical Physics. Year 3–4: Quantum Information Theory, Photonics, Advanced Lab, MPhys Research Project in the Quantum Technologies Laboratory.</p></div><div class="modal-footer"><button class="btn-gold" style="font-size:.78rem;">Apply for This Programme</button></div></div></div></div>
+
+<!-- Newsletter -->
+<section id="newsletter">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Stay Connected</span>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3.5vw,2.4rem);color:var(--navy);">The Aldenmere Review</h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.75;margin-top:.75rem;">Monthly dispatches of research highlights, events, and university news.</p>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" class="newsletter-input" placeholder="Your email address…" />
+          <button class="newsletter-btn">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.3);font-size:.86rem;line-height:1.8;margin-top:1.1rem;">Aldenmere Road, Cambridge · CB2 1TN</p>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2"><div class="footer-heading">Study</div><ul class="footer-links"><li><a href="courses.html">All Programmes</a></li><li><a href="courses.html#law">Law</a></li><li><a href="courses.html#medicine">Medicine</a></li><li><a href="courses.html#engineering">Engineering</a></li><li><a href="#">How to Apply</a></li></ul></div>
+      <div class="col-6 col-lg-2"><div class="footer-heading">Discover</div><ul class="footer-links"><li><a href="faculty.html">Faculty</a></li><li><a href="students.html">Students</a></li><li><a href="events.html">Events</a></li><li><a href="index.html">Home</a></li></ul></div>
+    </div>
+    <hr class="footer-divider" />
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="Back to top"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/shared.js"></script>
+</body>
+</html>

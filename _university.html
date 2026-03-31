@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aldenmere University — Since 1847</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────── */
+    :root {
+      --navy:        #0b1929;
+      --navy-mid:    #112240;
+      --navy-light:  #1a3358;
+      --gold:        #b8912a;
+      --gold-light:  #d4aa4a;
+      --gold-pale:   #f0e4c0;
+      --cream:       #f8f3eb;
+      --cream-dark:  #ede4d3;
+      --white:       #ffffff;
+      --text-dark:   #1a1209;
+      --text-mid:    #4a3f2f;
+      --text-light:  #8a7d6a;
+      --border:      rgba(184,145,42,.25);
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'EB Garamond', Georgia, serif;
+      --font-accent:  'Cormorant Garamond', Georgia, serif;
+
+      --transition: .35s cubic-bezier(.4,0,.2,1);
+      --shadow-sm: 0 2px 12px rgba(11,25,41,.10);
+      --shadow-md: 0 8px 40px rgba(11,25,41,.18);
+      --shadow-lg: 0 20px 80px rgba(11,25,41,.28);
+    }
+
+    /* ─── Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      font-size: 1.05rem;
+    }
+
+    ::selection { background: var(--gold-pale); color: var(--navy); }
+
+    /* Ornamental divider */
+    .ornament {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .ornament::before, .ornament::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .ornament-symbol {
+      font-size: .75rem; letter-spacing: .25em;
+      color: var(--gold); font-family: var(--font-display);
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: .8rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: .75rem;
+    }
+
+    /* ─── Navbar ────────────────────────────────────────── */
+    #mainNav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      transition: background var(--transition), box-shadow var(--transition), padding var(--transition);
+      padding: 1.5rem 0;
+      background: transparent;
+    }
+    #mainNav.scrolled {
+      background: rgba(11,25,41,.97);
+      backdrop-filter: blur(12px);
+      padding: .75rem 0;
+      box-shadow: 0 2px 40px rgba(0,0,0,.35);
+    }
+    .navbar-brand-wrap {
+      display: flex; flex-direction: column; line-height: 1;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: .03em;
+    }
+    .brand-est {
+      font-family: var(--font-accent);
+      font-size: .65rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+    .navbar-toggler {
+      border: 1px solid rgba(255,255,255,.3);
+      padding: .3rem .6rem;
+    }
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255%2C255%2C255%2C0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    .nav-link {
+      font-family: var(--font-body);
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78) !important;
+      padding: .5rem 1rem !important;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: 0; left: 1rem; right: 1rem;
+      height: 1px; background: var(--gold-light);
+      transform: scaleX(0); transition: transform var(--transition);
+    }
+    .nav-link:hover { color: var(--gold-light) !important; }
+    .nav-link:hover::after { transform: scaleX(1); }
+    .nav-cta {
+      background: transparent !important;
+      border: 1px solid var(--gold) !important;
+      color: var(--gold) !important;
+      border-radius: 0 !important;
+      padding: .45rem 1.25rem !important;
+      transition: background var(--transition), color var(--transition) !important;
+    }
+    .nav-cta:hover {
+      background: var(--gold) !important;
+      color: var(--navy) !important;
+    }
+    .nav-cta::after { display: none; }
+
+    /* ─── Hero ──────────────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      background: var(--navy);
+      position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+
+    /* Grain overlay */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .5; pointer-events: none; z-index: 2;
+    }
+
+    /* Architectural placeholder image area */
+    .hero-image-layer {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(11,25,41,.3) 0%, rgba(11,25,41,.7) 60%, rgba(11,25,41,.97) 100%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 60px,
+          rgba(184,145,42,.03) 60px,
+          rgba(184,145,42,.03) 61px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 60px,
+          rgba(184,145,42,.03) 60px,
+          rgba(184,145,42,.03) 61px
+        );
+      background-color: #0d1e35;
+    }
+
+    /* Decorative arch element */
+    .hero-arch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: min(500px, 100%); height: 100%;
+      background: linear-gradient(180deg, rgba(184,145,42,.06) 0%, transparent 50%);
+      clip-path: ellipse(50% 60% at 50% 0%);
+      pointer-events: none; z-index: 1;
+    }
+
+    .hero-content {
+      position: relative; z-index: 3;
+      padding: 8rem 0 5rem;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-body);
+      font-size: .78rem;
+      letter-spacing: .45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: block;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s .2s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 1.0;
+      color: var(--white);
+      margin-bottom: 0;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1s .4s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-accent);
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: rgba(255,255,255,.65);
+      font-weight: 300;
+      font-style: italic;
+      margin-top: 1.5rem;
+      max-width: 540px;
+      line-height: 1.6;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .9s .7s forwards;
+    }
+
+    .hero-actions {
+      margin-top: 2.5rem;
+      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+      opacity: 0; animation: fadeUp .8s 1s forwards;
+    }
+
+    .btn-primary-gold {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      font-family: var(--font-body);
+      font-size: .85rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .9rem 2.2rem;
+      border-radius: 0;
+      font-weight: 600;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary-gold:hover {
+      background: var(--gold-light);
+      color: var(--navy);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(184,145,42,.4);
+    }
+
+    .btn-ghost-white {
+      background: transparent;
+      color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.3);
+      font-family: var(--font-body);
+      font-size: .85rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .9rem 2.2rem;
+      border-radius: 0;
+      transition: border-color var(--transition), color var(--transition);
+      text-decoration: none; display: inline-block;
+    }
+    .btn-ghost-white:hover {
+      border-color: rgba(255,255,255,.7);
+      color: var(--white);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 5;
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      opacity: 0; animation: fadeIn 1s 1.5s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    .scroll-text {
+      font-size: .65rem; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--gold);
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      background: var(--navy-mid);
+      border-top: 1px solid rgba(184,145,42,.2);
+      border-bottom: 1px solid rgba(184,145,42,.2);
+      padding: 1.75rem 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: .75rem 1rem;
+      border-right: 1px solid rgba(184,145,42,.15);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: .75rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      margin-top: .35rem;
+    }
+
+    /* ─── About ─────────────────────────────────────────── */
+    #about {
+      background: var(--cream);
+      padding: 7rem 0;
+    }
+    .about-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-style: italic;
+      color: var(--navy);
+      line-height: 1.4;
+      border-left: 3px solid var(--gold);
+      padding-left: 2rem;
+      margin: 2rem 0;
+    }
+    .about-body {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--text-mid);
+      line-height: 1.85;
+    }
+    .img-placeholder {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: .75rem;
+      color: rgba(255,255,255,.25);
+      font-family: var(--font-body);
+      font-size: .8rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      position: relative; overflow: hidden;
+    }
+    .img-placeholder::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(184,145,42,.03) 20px, rgba(184,145,42,.03) 21px);
+    }
+    .img-placeholder i { font-size: 2.5rem; opacity: .3; }
+
+    /* ─── Programs ──────────────────────────────────────── */
+    #programs {
+      background: var(--navy);
+      padding: 7rem 0;
+      position: relative; overflow: hidden;
+    }
+    #programs::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,145,42,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .section-heading.light { color: var(--white); }
+    .section-heading.dark  { color: var(--navy); }
+
+    .program-card {
+      border: 1px solid rgba(184,145,42,.2);
+      background: rgba(255,255,255,.03);
+      padding: 2rem;
+      position: relative;
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+      cursor: pointer;
+      height: 100%;
+    }
+    .program-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gold);
+      transform: scaleX(0); transition: transform var(--transition);
+    }
+    .program-card:hover {
+      border-color: rgba(184,145,42,.5);
+      background: rgba(255,255,255,.06);
+      transform: translateY(-4px);
+    }
+    .program-card:hover::before { transform: scaleX(1); }
+
+    .program-number {
+      font-family: var(--font-display);
+      font-size: .75rem;
+      letter-spacing: .3em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .program-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: .75rem;
+      line-height: 1.3;
+    }
+    .program-desc {
+      font-family: var(--font-body);
+      font-size: .95rem;
+      color: rgba(255,255,255,.5);
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+    }
+    .program-meta {
+      display: flex; gap: 1.25rem; flex-wrap: wrap;
+    }
+    .program-meta span {
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: var(--font-body);
+    }
+    .program-meta span i { margin-right: .3rem; }
+
+    .program-arrow {
+      position: absolute; bottom: 1.5rem; right: 1.5rem;
+      color: rgba(184,145,42,.3);
+      font-size: 1.25rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+    .program-card:hover .program-arrow {
+      color: var(--gold);
+      transform: translate(3px, -3px);
+    }
+
+    /* ─── Faculty ───────────────────────────────────────── */
+    #faculty {
+      background: var(--cream);
+      padding: 7rem 0;
+    }
+    .faculty-card {
+      position: relative; overflow: hidden;
+      transition: transform var(--transition);
+    }
+    .faculty-card:hover { transform: translateY(-6px); }
+
+    .faculty-photo {
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, var(--navy-mid) 0%, var(--navy-light) 100%);
+      position: relative; overflow: hidden;
+    }
+    .faculty-photo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(11,25,41,.8) 0%, transparent 50%);
+    }
+    .faculty-photo .img-placeholder {
+      height: 100%; border-radius: 0;
+    }
+    .faculty-info {
+      padding: 1.25rem 0 .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .faculty-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: .2rem;
+    }
+    .faculty-dept {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .faculty-specialty {
+      font-family: var(--font-body);
+      font-style: italic;
+      color: var(--text-light);
+      font-size: .9rem;
+      margin-top: .4rem;
+    }
+
+    /* ─── Research ──────────────────────────────────────── */
+    #research {
+      background: var(--cream-dark);
+      padding: 7rem 0;
+      position: relative;
+    }
+    #research::before {
+      content: 'RESEARCH';
+      position: absolute; top: 3rem; right: -1rem;
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 900;
+      color: rgba(11,25,41,.04);
+      letter-spacing: .1em;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .research-card {
+      background: var(--white);
+      border-bottom: 3px solid var(--border);
+      padding: 2rem;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      height: 100%;
+    }
+    .research-card:hover {
+      border-color: var(--gold);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+    .research-tag {
+      display: inline-block;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--border);
+      padding: .25rem .75rem;
+      font-family: var(--font-body);
+      margin-bottom: 1rem;
+    }
+    .research-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: .75rem;
+      line-height: 1.35;
+    }
+    .research-excerpt {
+      font-family: var(--font-body);
+      color: var(--text-mid);
+      font-size: .95rem;
+      line-height: 1.75;
+    }
+    .research-byline {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      color: var(--text-light);
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--cream-dark);
+      font-style: italic;
+    }
+
+    /* Research showcase */
+    .research-showcase {
+      background: var(--navy);
+      padding: 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .research-showcase::before {
+      content: '"';
+      position: absolute; top: -2rem; left: 2rem;
+      font-family: var(--font-display);
+      font-size: 12rem; line-height: 1;
+      color: rgba(184,145,42,.12);
+      pointer-events: none;
+    }
+    .research-showcase-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: var(--white);
+      font-style: italic;
+      line-height: 1.5;
+      position: relative; z-index: 1;
+    }
+    .research-showcase-meta {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      color: var(--gold);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-top: 1.5rem;
+    }
+
+    /* ─── Library ───────────────────────────────────────── */
+    #library {
+      background: var(--navy);
+      padding: 7rem 0;
+      position: relative; overflow: hidden;
+    }
+    .library-hero-img {
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, #1a2f4a 0%, #0d1e35 100%);
+      position: relative;
+    }
+    .library-hero-img .img-placeholder { height: 100%; }
+    .library-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(184,145,42,.15);
+      margin-top: 1px;
+    }
+    .library-stat {
+      background: rgba(255,255,255,.03);
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .library-stat-num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+    .library-stat-lbl {
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      font-family: var(--font-body);
+      margin-top: .25rem;
+    }
+
+    .library-feature {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(184,145,42,.12);
+    }
+    .library-feature:first-child { border-top: 1px solid rgba(184,145,42,.12); }
+    .library-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border: 1px solid rgba(184,145,42,.3);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+    .library-feature-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: .3rem;
+    }
+    .library-feature-desc {
+      font-family: var(--font-body);
+      font-size: .9rem;
+      color: rgba(255,255,255,.45);
+      line-height: 1.6;
+    }
+
+    /* ─── Events ────────────────────────────────────────── */
+    #events {
+      background: var(--cream);
+      padding: 7rem 0;
+    }
+
+    .event-filter {
+      display: flex; gap: .5rem; flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .filter-btn {
+      font-family: var(--font-body);
+      font-size: .78rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .5rem 1.25rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      border-radius: 0;
+      transition: all var(--transition);
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+
+    .event-card {
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      background: var(--white);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      height: 100%;
+    }
+    .event-card:hover {
+      border-color: var(--gold);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-3px);
+    }
+    .event-badge {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-family: var(--font-body);
+      padding: .28rem .75rem;
+      margin-bottom: 1rem;
+    }
+    .event-badge.in-person {
+      color: var(--navy);
+      background: var(--gold-pale);
+    }
+    .event-badge.online {
+      color: var(--white);
+      background: var(--navy-light);
+    }
+    .event-date {
+      display: flex; align-items: baseline; gap: .5rem;
+      margin-bottom: .75rem;
+    }
+    .event-day {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .event-month-year {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+    .event-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: .5rem;
+      line-height: 1.35;
+    }
+    .event-meta {
+      font-family: var(--font-body);
+      font-size: .85rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+    .event-meta i { margin-right: .3rem; }
+    .event-register {
+      display: inline-block; margin-top: 1.25rem;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .event-register:hover {
+      color: var(--navy);
+      border-color: var(--navy);
+    }
+
+    /* Featured event */
+    .event-featured {
+      background: var(--navy);
+      padding: 2.5rem;
+      border: none;
+      color: var(--white);
+    }
+    .event-featured .event-day { color: var(--gold-light); }
+    .event-featured .event-month-year { color: rgba(255,255,255,.4); }
+    .event-featured .event-title { color: var(--white); font-size: 1.4rem; }
+    .event-featured .event-meta { color: rgba(255,255,255,.5); }
+    .event-featured .event-register { color: var(--gold-light); border-color: rgba(184,145,42,.3); }
+
+    /* ─── Testimonials ──────────────────────────────────── */
+    #testimonials {
+      background: var(--navy-mid);
+      padding: 6rem 0;
+      position: relative; overflow: hidden;
+    }
+    #testimonials::before {
+      content: '';
+      position: absolute; bottom: -200px; left: -200px;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,145,42,.05) 0%, transparent 70%);
+    }
+    .testimonial-item {
+      padding: 3rem;
+      position: relative;
+    }
+    .testimonial-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      font-style: italic;
+      color: rgba(255,255,255,.88);
+      line-height: 1.65;
+      margin-bottom: 1.75rem;
+      position: relative; z-index: 1;
+    }
+    .testimonial-author {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .author-avatar {
+      width: 52px; height: 52px;
+      background: var(--navy-light);
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.3); font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .author-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--white);
+      font-weight: 600;
+    }
+    .author-detail {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    /* ─── Newsletter ────────────────────────────────────── */
+    #newsletter {
+      background: var(--cream-dark);
+      padding: 5rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .newsletter-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      color: var(--navy);
+    }
+    .newsletter-form { display: flex; gap: 0; max-width: 480px; }
+    .newsletter-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: .85rem 1.2rem;
+      background: var(--white);
+      font-family: var(--font-body);
+      color: var(--navy);
+      font-size: .95rem;
+      outline: none;
+      border-radius: 0;
+    }
+    .newsletter-input::placeholder { color: var(--text-light); font-style: italic; }
+    .newsletter-input:focus { border-color: var(--gold); }
+    .newsletter-btn {
+      background: var(--navy);
+      color: var(--white);
+      border: 1px solid var(--navy);
+      padding: .85rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0;
+      white-space: nowrap;
+      transition: background var(--transition);
+    }
+    .newsletter-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+
+    /* ─── Footer ────────────────────────────────────────── */
+    footer {
+      background: #080f1c;
+      padding: 5rem 0 2rem;
+      border-top: 1px solid rgba(184,145,42,.2);
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: .03em;
+    }
+    .footer-tagline {
+      font-family: var(--font-accent);
+      font-size: .9rem;
+      color: rgba(255,255,255,.35);
+      font-style: italic;
+      margin-top: .25rem;
+    }
+    .footer-heading {
+      font-family: var(--font-body);
+      font-size: .75rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: .6rem; }
+    .footer-links a {
+      font-family: var(--font-body);
+      color: rgba(255,255,255,.45);
+      text-decoration: none;
+      font-size: .92rem;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-divider {
+      border-color: rgba(184,145,42,.12);
+      margin: 3rem 0 1.5rem;
+    }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-copy {
+      font-family: var(--font-body);
+      font-size: .8rem;
+      color: rgba(255,255,255,.25);
+    }
+    .footer-socials { display: flex; gap: .75rem; }
+    .social-link {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.4);
+      text-decoration: none; font-size: .85rem;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── Animations ────────────────────────────────────── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50%       { opacity: .4; transform: scaleY(.7); }
+    }
+
+    /* Reveal on scroll */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─── Responsive Tweaks ─────────────────────────────── */
+    @media (max-width: 767px) {
+      .stats-bar .stat-item { border-right: none; border-bottom: 1px solid rgba(184,145,42,.12); }
+      .stats-bar .stat-item:last-child { border-bottom: none; }
+      .newsletter-form { flex-direction: column; }
+      .newsletter-input { border-right: 1px solid var(--border); }
+      .research-showcase { padding: 2rem; }
+      .testimonial-item { padding: 1.5rem; }
+    }
+
+    /* Back to top */
+    #backTop {
+      position: fixed; bottom: 2rem; right: 1.5rem; z-index: 999;
+      width: 44px; height: 44px;
+      background: var(--gold);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--navy); font-size: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--transition), background var(--transition);
+    }
+    #backTop.visible { opacity: 1; pointer-events: auto; }
+    #backTop:hover { background: var(--gold-light); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <div class="navbar-brand-wrap">
+        <span class="brand-name">Aldenmere</span>
+        <span class="brand-est">Est. 1847 · Cambridge</span>
+      </div>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="#programs">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#faculty">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="#research">Research</a></li>
+        <li class="nav-item"><a class="nav-link" href="#library">Library</a></li>
+        <li class="nav-item"><a class="nav-link" href="#events">Events</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="nav-link nav-cta" href="#">Apply Now</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-image-layer"></div>
+  <div class="hero-arch"></div>
+
+  <div class="hero-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <span class="hero-eyebrow">University of Aldenmere</span>
+          <h1 class="hero-title">
+            Where <em>Knowledge</em><br>Meets<br>Legacy
+          </h1>
+          <p class="hero-subtitle">
+            For over a century and a half, Aldenmere has shaped the minds that shape the world — through rigorous scholarship, pioneering research, and an unwavering commitment to human flourishing.
+          </p>
+          <div class="hero-actions">
+            <a href="#programs" class="btn-primary-gold">Explore Programmes</a>
+            <a href="#about" class="btn-ghost-white">Our Story</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="scroll-text">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="row g-0">
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-count="24800">24,800</div>
+          <div class="stat-label">Enrolled Students</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-count="1400">1,400+</div>
+          <div class="stat-label">Faculty Members</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-count="186">186</div>
+          <div class="stat-label">Research Centres</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number" data-count="177">177 yrs</div>
+          <div class="stat-label">Of Excellence</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════════ -->
+<section id="about">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-5 reveal">
+        <!-- Image placeholder -->
+        <div style="position:relative;">
+          <div class="img-placeholder" style="height:420px;">
+            <i class="bi bi-building-fill"></i>
+            <span>Historic Main Hall</span>
+          </div>
+          <!-- Floating accent box -->
+          <div style="position:absolute; bottom:-2rem; right:-2rem; background:var(--gold); padding:1.5rem 2rem; z-index:2; display:none;" class="d-md-block">
+            <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);line-height:1;">Top 5</div>
+            <div style="font-family:var(--font-body);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,25,41,.7);">Global Rankings</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7 reveal reveal-delay-2">
+        <span class="section-label">About the University</span>
+        <h2 class="section-heading dark" style="margin-bottom:1.5rem;">
+          A Tradition of<br><em style="font-style:italic; color:var(--gold);">Intellectual Daring</em>
+        </h2>
+
+        <blockquote class="about-quote">
+          "The pursuit of knowledge is not merely an academic virtue — it is the foundation upon which civilisations are built."
+        </blockquote>
+
+        <p class="about-body">
+          Founded in 1847 on the banks of the River Alden, the University of Aldenmere has grown from a small college of philosophy and natural sciences into one of the world's foremost centres of higher learning. Our 14 faculties encompass disciplines from ancient languages to quantum computing.
+        </p>
+        <p class="about-body mt-3">
+          Aldenmere graduates occupy positions of leadership across government, industry, medicine, and the arts. Our alumni network spans 160 countries — a living testament to the enduring value of an Aldenmere education.
+        </p>
+
+        <div class="ornament">
+          <span class="ornament-symbol">✦ ✦ ✦</span>
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-sm-4">
+            <div style="padding:1rem; background:var(--cream-dark); text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--navy);">14</div>
+              <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Faculties</div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div style="padding:1rem; background:var(--cream-dark); text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--navy);">120+</div>
+              <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Degree Programmes</div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div style="padding:1rem; background:var(--cream-dark); text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--navy);">160+</div>
+              <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Countries Represented</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PROGRAMMES
+══════════════════════════════════════════════ -->
+<section id="programs">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-7 reveal">
+        <span class="section-label" style="color:var(--gold);">Academic Programmes</span>
+        <h2 class="section-heading light">
+          Disciplines That<br><em>Define Futures</em>
+        </h2>
+      </div>
+      <div class="col-lg-5 d-flex align-items-end reveal reveal-delay-2">
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.5);font-size:1rem;line-height:1.8;">
+          From undergraduate studies to doctoral research, our programmes are designed to challenge, inspire, and prepare you for the complex world ahead.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="program-card">
+          <div class="program-number">01 / Law & Political Science</div>
+          <div class="program-title">Faculty of Law &amp; Governance</div>
+          <p class="program-desc">Shaping tomorrow's legal minds with a rigorous curriculum spanning constitutional law, international relations, and jurisprudence.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>3–4 Years</span>
+            <span><i class="bi bi-mortarboard"></i>BSc · LLM · PhD</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="program-card">
+          <div class="program-number">02 / Medicine &amp; Health Sciences</div>
+          <div class="program-title">School of Medical Sciences</div>
+          <p class="program-desc">World-class clinical training combined with cutting-edge biomedical research in our state-of-the-art teaching hospital.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>5–6 Years</span>
+            <span><i class="bi bi-mortarboard"></i>MBBS · MSc · MD</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="program-card">
+          <div class="program-number">03 / Engineering &amp; Computing</div>
+          <div class="program-title">Faculty of Engineering</div>
+          <p class="program-desc">Interdisciplinary programmes in civil, mechanical, electrical, and computer engineering bridging theory and real-world impact.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>4 Years</span>
+            <span><i class="bi bi-mortarboard"></i>BEng · MEng · PhD</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="program-card">
+          <div class="program-number">04 / Humanities &amp; Classics</div>
+          <div class="program-title">Faculty of Arts &amp; Humanities</div>
+          <p class="program-desc">Exploring the full breadth of human expression through literature, philosophy, history, languages, and the visual arts.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>3 Years</span>
+            <span><i class="bi bi-mortarboard"></i>BA · MA · DPhil</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="program-card">
+          <div class="program-number">05 / Business &amp; Economics</div>
+          <div class="program-title">Aldenmere Business School</div>
+          <p class="program-desc">A globally ranked programme developing ethical leaders equipped to navigate the complexities of modern global markets.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>3–4 Years</span>
+            <span><i class="bi bi-mortarboard"></i>BSc · MBA · DBA</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+        <div class="program-card">
+          <div class="program-number">06 / Natural Sciences</div>
+          <div class="program-title">Faculty of Natural Sciences</div>
+          <p class="program-desc">Physics, chemistry, biology, and earth sciences — united by a deep commitment to empirical enquiry and discovery.</p>
+          <div class="program-meta">
+            <span><i class="bi bi-clock"></i>3–4 Years</span>
+            <span><i class="bi bi-mortarboard"></i>BSc · MSc · PhD</span>
+          </div>
+          <i class="bi bi-arrow-up-right program-arrow"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-5 reveal">
+      <a href="#" class="btn-ghost-white">View All 120 Programmes &ensp;<i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     FACULTY
+══════════════════════════════════════════════ -->
+<section id="faculty">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-7 reveal">
+        <span class="section-label">Our Faculty</span>
+        <h2 class="section-heading dark">
+          Scholars of<br><em style="color:var(--gold);font-style:italic;">International Renown</em>
+        </h2>
+        <p class="about-body mt-3" style="max-width:520px;">
+          Our faculty includes Nobel laureates, Booker Prize winners, and Fellows of the Royal Society — each committed to mentoring the next generation.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-sm-6 col-lg-3 reveal">
+        <div class="faculty-card">
+          <div class="faculty-photo">
+            <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+          </div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. Eleanor Ashworth</div>
+            <div class="faculty-dept">School of Law</div>
+            <div class="faculty-specialty">International Human Rights Law</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 reveal reveal-delay-1">
+        <div class="faculty-card">
+          <div class="faculty-photo">
+            <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+          </div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. James Meridith</div>
+            <div class="faculty-dept">Dept. of Physics</div>
+            <div class="faculty-specialty">Quantum Field Theory</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 reveal reveal-delay-2">
+        <div class="faculty-card">
+          <div class="faculty-photo">
+            <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+          </div>
+          <div class="faculty-info">
+            <div class="faculty-name">Dr. Amara Osei-Bonsu</div>
+            <div class="faculty-dept">Medical Sciences</div>
+            <div class="faculty-specialty">Molecular Oncology</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 reveal reveal-delay-3">
+        <div class="faculty-card">
+          <div class="faculty-photo">
+            <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+          </div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. Isabelle Fontaine</div>
+            <div class="faculty-dept">Faculty of Humanities</div>
+            <div class="faculty-specialty">Medieval European History</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row mt-4">
+      <div class="col text-center reveal">
+        <a href="#" style="font-family:var(--font-body);font-size:.82rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;">
+          Meet All 1,400 Faculty Members &ensp;<i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     RESEARCH
+══════════════════════════════════════════════ -->
+<section id="research">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Research &amp; Innovation</span>
+        <h2 class="section-heading dark">
+          Pushing the<br><em style="color:var(--gold);font-style:italic;">Boundaries of Knowing</em>
+        </h2>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-lg-4 reveal">
+        <div class="research-card">
+          <span class="research-tag">Biomedical</span>
+          <h3 class="research-title">Novel mRNA Vaccine Architectures for Pandemic Preparedness</h3>
+          <p class="research-excerpt">Our immunology lab has developed a platform capable of producing variant-adaptive vaccines in under 48 hours, representing a paradigm shift in pandemic response capability.</p>
+          <div class="research-byline">Prof. A. Osei-Bonsu et al. · Published in <em>Nature Medicine</em>, 2024</div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 reveal reveal-delay-1">
+        <div class="research-card">
+          <span class="research-tag">Climate Sciences</span>
+          <h3 class="research-title">Deep-Sea Carbon Sequestration and Ocean Alkalinity Enhancement</h3>
+          <p class="research-excerpt">A cross-disciplinary project measuring the potential of enhanced ocean alkalinity to offset 2Gt of CO₂ annually, in partnership with five coastal nations.</p>
+          <div class="research-byline">Dr. K. Watanabe et al. · Grant: £12.4M UKRI · 2023–2027</div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 reveal reveal-delay-2">
+        <div class="research-card">
+          <span class="research-tag">Artificial Intelligence</span>
+          <h3 class="research-title">Interpretable Neural Architectures for High-Stakes Decision Systems</h3>
+          <p class="research-excerpt">Developing explainability frameworks that allow judges, clinicians, and policymakers to audit AI-assisted decisions with full methodological transparency.</p>
+          <div class="research-byline">Prof. T. Blackwood et al. · ERC Advanced Grant · 2024</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row mt-4 reveal">
+      <div class="col-12">
+        <div class="research-showcase">
+          <p class="research-showcase-quote">
+            "The most important questions are often the ones no one has yet thought to ask. At Aldenmere, we give researchers the freedom — and the resources — to ask them."
+          </p>
+          <div class="research-showcase-meta">
+            Vice-Chancellor's Office · Research Excellence Framework 2024 — Outstanding Rating
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5 g-3">
+      <div class="col-6 col-md-3 reveal text-center">
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">£840M</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Annual Research Income</div>
+      </div>
+      <div class="col-6 col-md-3 reveal reveal-delay-1 text-center">
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">6,200+</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Publications per Year</div>
+      </div>
+      <div class="col-6 col-md-3 reveal reveal-delay-2 text-center">
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">47</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Nobel Alumni</div>
+      </div>
+      <div class="col-6 col-md-3 reveal reveal-delay-3 text-center">
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--navy);">340+</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-light);">Active Patents</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     LIBRARY
+══════════════════════════════════════════════ -->
+<section id="library">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label" style="color:var(--gold);">The Aldenmere Library</span>
+        <h2 class="section-heading light">
+          A Temple of<br><em>Recorded Thought</em>
+        </h2>
+      </div>
+      <div class="col-lg-6 d-flex align-items-end reveal reveal-delay-2">
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.5);font-size:1rem;line-height:1.8;">
+          Established in 1851, the Aldenmere Library holds one of the world's great research collections — from illuminated manuscripts to digital archives of the modern era.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4 align-items-start">
+
+      <div class="col-lg-5 reveal">
+        <div class="library-hero-img">
+          <div class="img-placeholder"><i class="bi bi-book-fill"></i><span>The Radcliffe Reading Room</span></div>
+        </div>
+        <div class="library-stat-grid">
+          <div class="library-stat">
+            <div class="library-stat-num">4.8M</div>
+            <div class="library-stat-lbl">Physical Volumes</div>
+          </div>
+          <div class="library-stat">
+            <div class="library-stat-num">900K</div>
+            <div class="library-stat-lbl">Digital Resources</div>
+          </div>
+          <div class="library-stat">
+            <div class="library-stat-num">1,200</div>
+            <div class="library-stat-lbl">Study Spaces</div>
+          </div>
+          <div class="library-stat">
+            <div class="library-stat-num">24/7</div>
+            <div class="library-stat-lbl">Online Access</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7 ps-lg-5 reveal reveal-delay-2">
+
+        <div class="library-feature">
+          <div class="library-icon"><i class="bi bi-globe2"></i></div>
+          <div>
+            <div class="library-feature-title">Digital Research Portal</div>
+            <div class="library-feature-desc">Access over 900,000 e-journals, databases, and digital archives from anywhere in the world with your Aldenmere credentials.</div>
+          </div>
+        </div>
+
+        <div class="library-feature">
+          <div class="library-icon"><i class="bi bi-archive-fill"></i></div>
+          <div>
+            <div class="library-feature-title">Special Collections &amp; Archives</div>
+            <div class="library-feature-desc">Rare manuscripts, first editions, and institutional records dating to 1847, available by appointment for scholarly research.</div>
+          </div>
+        </div>
+
+        <div class="library-feature">
+          <div class="library-icon"><i class="bi bi-laptop"></i></div>
+          <div>
+            <div class="library-feature-title">Research Support Services</div>
+            <div class="library-feature-desc">Dedicated subject librarians, data management consultation, and systematic review support for postgraduate and doctoral researchers.</div>
+          </div>
+        </div>
+
+        <div class="library-feature">
+          <div class="library-icon"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="library-feature-title">Collaborative Study Suites</div>
+            <div class="library-feature-desc">Bookable group study rooms equipped with presentation technology, whiteboards, and high-speed connectivity across three library sites.</div>
+          </div>
+        </div>
+
+        <div class="library-feature">
+          <div class="library-icon"><i class="bi bi-journal-text"></i></div>
+          <div>
+            <div class="library-feature-title">Interlibrary Loans &amp; Document Delivery</div>
+            <div class="library-feature-desc">Fast access to materials held at partner institutions worldwide, typically delivered within 48 hours.</div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <a href="#" class="btn-primary-gold" style="font-size:.8rem;">Visit the Library Portal</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     EVENTS
+══════════════════════════════════════════════ -->
+<section id="events">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Events &amp; Lectures</span>
+        <h2 class="section-heading dark">
+          Life at<br><em style="color:var(--gold);font-style:italic;">Aldenmere</em>
+        </h2>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="event-filter reveal">
+      <button class="filter-btn active" data-filter="all">All Events</button>
+      <button class="filter-btn" data-filter="lecture">Lectures</button>
+      <button class="filter-btn" data-filter="symposium">Symposia</button>
+      <button class="filter-btn" data-filter="online">Online</button>
+      <button class="filter-btn" data-filter="open-day">Open Days</button>
+    </div>
+
+    <div class="row g-3" id="eventsGrid">
+
+      <!-- Featured event -->
+      <div class="col-lg-6 reveal" data-event="lecture">
+        <div class="event-card event-featured" style="height:100%;">
+          <span class="event-badge in-person" style="background:rgba(184,145,42,.2);color:var(--gold-light);">
+            <i class="bi bi-geo-alt-fill"></i> In Person · Aldenmere Hall
+          </span>
+          <div class="event-date">
+            <span class="event-day">14</span>
+            <span class="event-month-year">April 2026</span>
+          </div>
+          <div class="event-title">The Beveridge Lecture: Democracy in the Age of Artificial Intelligence</div>
+          <p class="event-meta"><i class="bi bi-person"></i>Rt. Hon. Dame Claudia Hargreaves · 18:30 GMT</p>
+          <p style="font-family:var(--font-body);color:rgba(255,255,255,.55);font-size:.92rem;line-height:1.7;margin-top:.75rem;">
+            The 77th annual Beveridge Lecture, examining how democratic institutions must evolve to meet the governance challenges posed by large-scale AI deployment.
+          </p>
+          <a href="#" class="event-register">Reserve Your Place <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 reveal reveal-delay-1">
+        <div class="row g-3 h-100">
+
+          <div class="col-12" data-event="online">
+            <div class="event-card">
+              <span class="event-badge online"><i class="bi bi-camera-video-fill"></i> Online · Zoom</span>
+              <div class="event-date">
+                <span class="event-day">22</span>
+                <span class="event-month-year">April 2026</span>
+              </div>
+              <div class="event-title">Masterclass: Writing the Doctoral Thesis in the Humanities</div>
+              <p class="event-meta"><i class="bi bi-person"></i>Prof. I. Fontaine · 14:00 BST</p>
+              <a href="#" class="event-register">Register Free <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-12" data-event="symposium">
+            <div class="event-card">
+              <span class="event-badge in-person"><i class="bi bi-geo-alt-fill"></i> In Person · Cavendish Wing</span>
+              <div class="event-date">
+                <span class="event-day">05</span>
+                <span class="event-month-year">May 2026</span>
+              </div>
+              <div class="event-title">International Symposium on Climate Finance &amp; Just Transition</div>
+              <p class="event-meta"><i class="bi bi-people"></i>28 Speakers · 3-Day Event</p>
+              <a href="#" class="event-register">Submit Abstract <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal" data-event="open-day">
+        <div class="event-card">
+          <span class="event-badge in-person"><i class="bi bi-geo-alt-fill"></i> In Person · Main Campus</span>
+          <div class="event-date">
+            <span class="event-day">17</span>
+            <span class="event-month-year">May 2026</span>
+          </div>
+          <div class="event-title">Undergraduate Open Day — Spring Edition</div>
+          <p class="event-meta"><i class="bi bi-clock"></i>10:00–16:00 BST · Tours, Talks &amp; Q&amp;A</p>
+          <a href="#" class="event-register">Book a Place <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1" data-event="online">
+        <div class="event-card">
+          <span class="event-badge online"><i class="bi bi-camera-video-fill"></i> Online · Live Stream</span>
+          <div class="event-date">
+            <span class="event-day">29</span>
+            <span class="event-month-year">May 2026</span>
+          </div>
+          <div class="event-title">Research Frontiers Webinar: Quantum Biology</div>
+          <p class="event-meta"><i class="bi bi-person"></i>Prof. J. Meridith · 16:00 BST</p>
+          <a href="#" class="event-register">Join Webinar <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2" data-event="lecture">
+        <div class="event-card">
+          <span class="event-badge in-person"><i class="bi bi-geo-alt-fill"></i> In Person · Sheldonian Theatre</span>
+          <div class="event-date">
+            <span class="event-day">10</span>
+            <span class="event-month-year">June 2026</span>
+          </div>
+          <div class="event-title">Encaenia &amp; Commemoration Day Ceremony</div>
+          <p class="event-meta"><i class="bi bi-star-fill"></i>Honorary Degrees Awarded · Gown Required</p>
+          <a href="#" class="event-register">More Information <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-5 reveal">
+      <a href="#" style="font-family:var(--font-body);font-size:.82rem;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;">
+        View Full Events Calendar &ensp;<i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <span class="section-label" style="color:var(--gold);display:block;text-align:center;">Student Voices</span>
+      <h2 class="section-heading light">What Our Students Say</h2>
+    </div>
+
+    <div class="row g-0">
+
+      <div class="col-lg-4 reveal" style="border-right:1px solid rgba(184,145,42,.15);">
+        <div class="testimonial-item">
+          <p class="testimonial-quote">
+            "Aldenmere didn't just give me a degree. It gave me a way of seeing — a habit of mind that I draw on every day as a physician and researcher."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Dr. Noa Goldstein</div>
+              <div class="author-detail">MBBS 2019 · Neurologist, King's College London</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 reveal reveal-delay-1" style="border-right:1px solid rgba(184,145,42,.15);">
+        <div class="testimonial-item">
+          <p class="testimonial-quote">
+            "The research environment here is extraordinary. My supervisors treated me as a peer from my first week. That trust changes everything."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Hiroshi Yamamoto</div>
+              <div class="author-detail">DPhil Physics 2022 · MIT Postdoctoral Fellow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 reveal reveal-delay-2">
+        <div class="testimonial-item">
+          <p class="testimonial-quote">
+            "The library alone is worth coming here for. But it's the people — students, faculty, everyone — who make Aldenmere genuinely transformative."
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <div class="author-name">Fatima Al-Rashid</div>
+              <div class="author-detail">LLM 2023 · UN Legal Affairs Officer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     NEWSLETTER
+══════════════════════════════════════════════ -->
+<section id="newsletter">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Stay Connected</span>
+        <h2 class="newsletter-heading">The Aldenmere Review</h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:1rem;line-height:1.75;margin-top:.75rem;">
+          Monthly dispatches of research highlights, upcoming events, and university news — curated for inquiring minds.
+        </p>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" class="newsletter-input" placeholder="Your email address…" />
+          <button class="newsletter-btn" type="submit">Subscribe</button>
+        </form>
+        <p style="font-family:var(--font-body);font-size:.78rem;color:var(--text-light);font-style:italic;margin-top:.75rem;">
+          Approximately 4 issues per year. Unsubscribe at any time.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.3);font-size:.88rem;line-height:1.8;margin-top:1.25rem;">
+          Aldenmere Road, Cambridge<br>CB2 1TN, United Kingdom<br>
+          <a href="tel:+441223000000" style="color:rgba(255,255,255,.3);text-decoration:none;">+44 1223 000 000</a>
+        </p>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Study</div>
+        <ul class="footer-links">
+          <li><a href="#">Undergraduate</a></li>
+          <li><a href="#">Postgraduate</a></li>
+          <li><a href="#">Doctoral</a></li>
+          <li><a href="#">Online Learning</a></li>
+          <li><a href="#">Short Courses</a></li>
+          <li><a href="#">How to Apply</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Research</div>
+        <ul class="footer-links">
+          <li><a href="#">Research Groups</a></li>
+          <li><a href="#">Centres &amp; Institutes</a></li>
+          <li><a href="#">Funding &amp; Grants</a></li>
+          <li><a href="#">Partnerships</a></li>
+          <li><a href="#">Publications</a></li>
+          <li><a href="#">Open Access</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Campus Life</div>
+        <ul class="footer-links">
+          <li><a href="#">Accommodation</a></li>
+          <li><a href="#">Student Union</a></li>
+          <li><a href="#">Sport &amp; Wellbeing</a></li>
+          <li><a href="#">Arts &amp; Culture</a></li>
+          <li><a href="#">Clubs &amp; Societies</a></li>
+          <li><a href="#">Chaplaincy</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">History</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Rankings</a></li>
+          <li><a href="#">News &amp; Press</a></li>
+          <li><a href="#">Alumni</a></li>
+          <li><a href="#">Give to Aldenmere</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="footer-divider" />
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.25);text-decoration:none;">Privacy Policy</a>
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.25);text-decoration:none;">Cookie Policy</a>
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.25);text-decoration:none;">Accessibility</a>
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.25);text-decoration:none;">Legal Notices</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="backTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ── Navbar scroll transform ─────────────────────── */
+  const nav = document.getElementById('mainNav');
+  const backTop = document.getElementById('backTop');
+
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 80);
+    backTop.classList.toggle('visible', y > 600);
+  }, { passive: true });
+
+  /* ── Reveal on scroll ────────────────────────────── */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  /* ── Event filter ────────────────────────────────── */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('#eventsGrid [data-event]').forEach(card => {
+        const parent = card.closest('[data-event]') || card;
+        if (filter === 'all' || card.dataset.event === filter) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  /* ── Smooth active nav highlight ─────────────────── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link:not(.nav-cta)');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(link => {
+          link.style.color = link.getAttribute('href') === `#${id}`
+            ? 'rgba(212,170,74,1)'
+            : '';
+        });
+      }
+    });
+  }, { threshold: 0.35 });
+
+  sections.forEach(s => sectionObserver.observe(s));
+
+  /* ── Subtle parallax on hero text ───────────────── */
+  const heroContent = document.querySelector('.hero-content');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < window.innerHeight) {
+      heroContent.style.transform = `translateY(${window.scrollY * 0.22}px)`;
+    }
+  }, { passive: true });
+
+  /* ── Typewriter cursor on hero title ─────────────── */
+  // Small flourish: a subtle gold underline sweep on load
+  document.querySelectorAll('.program-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.querySelector('.program-arrow').style.color = 'var(--gold)';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.querySelector('.program-arrow').style.color = 'rgba(184,145,42,.3)';
+    });
+  });
+</script>
+</body>
+</html>

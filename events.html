@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Aldenmere University</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="assets/shared.css" rel="stylesheet" />
+  <style>
+    /* ── Filter bar ───────────────────────────────── */
+    .filter-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: 1.1rem 0; position: sticky; top: 56px; z-index: 890;
+    }
+    .filter-btn {
+      font-family: var(--font-body); font-size: .76rem;
+      letter-spacing: .14em; text-transform: uppercase;
+      padding: .42rem 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-mid);
+      cursor: pointer; border-radius: 0; transition: all var(--transition); white-space: nowrap;
+    }
+    .filter-btn.active, .filter-btn:hover { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+    /* ── Featured event ───────────────────────────── */
+    .event-featured {
+      background: var(--navy); padding: 2.5rem 2.5rem 2rem;
+      position: relative; overflow: hidden; height: 100%;
+    }
+    .event-featured::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light), transparent);
+    }
+    .event-featured .event-day { font-family: var(--font-display); font-size: 3rem; font-weight: 900; color: var(--gold-light); line-height: 1; }
+    .event-featured .event-month { font-family: var(--font-body); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.38); }
+    .event-featured .event-title { font-family: var(--font-display); font-size: clamp(1.2rem, 2.5vw, 1.65rem); font-weight: 700; color: var(--white); line-height: 1.3; margin: .75rem 0 .5rem; }
+    .event-featured .event-desc { font-family: var(--font-body); font-size: .95rem; color: rgba(255,255,255,.55); line-height: 1.75; }
+    .event-featured .event-meta-row { font-family: var(--font-body); font-size: .85rem; color: rgba(255,255,255,.42); font-style: italic; margin-top: .5rem; }
+    .event-featured .register-link { display: inline-block; margin-top: 1.25rem; font-family: var(--font-body); font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(184,145,42,.3); padding-bottom: 2px; transition: color var(--transition); }
+    .event-featured .register-link:hover { color: var(--gold-light); }
+
+    /* ── Standard event card ──────────────────────── */
+    .event-card {
+      background: var(--white); border: 1px solid var(--border); padding: 1.5rem;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); height: 100%;
+      position: relative;
+    }
+    .event-card:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); transform: translateY(-3px); }
+    .event-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transition: transform var(--transition); }
+    .event-card:hover::before { transform: scaleX(1); }
+
+    .event-date-block { margin-bottom: .9rem; }
+    .ev-day { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; color: var(--navy); line-height: 1; }
+    .ev-month { font-family: var(--font-body); font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-light); }
+    .event-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--navy); line-height: 1.35; margin-bottom: .5rem; }
+    .event-meta { font-family: var(--font-body); font-size: .83rem; color: var(--text-light); font-style: italic; }
+    .event-meta i { margin-right: .3rem; }
+    .event-register { display: inline-block; margin-top: 1rem; font-family: var(--font-body); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color var(--transition), border-color var(--transition); }
+    .event-register:hover { color: var(--navy); border-color: var(--navy); }
+
+    /* ── Month section heading ────────────────────── */
+    .month-head {
+      font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+      color: var(--navy); padding: 2rem 0 1rem;
+      border-top: 2px solid var(--border); margin-top: 2rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .month-head:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+    .month-head .month-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Timeline list view ───────────────────────── */
+    .event-list-item {
+      display: flex; gap: 1.5rem; align-items: flex-start;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .event-list-item:last-child { border-bottom: none; }
+    .event-list-item:hover { background: var(--white); padding-left: .75rem; margin-left: -.75rem; margin-right: -.75rem; padding-right: .75rem; }
+    .eli-date { width: 56px; flex-shrink: 0; text-align: center; }
+    .eli-day { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--navy); line-height: 1; }
+    .eli-month { font-family: var(--font-body); font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-light); }
+    .eli-divider { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
+    .eli-content { flex: 1; }
+    .eli-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: .3rem; }
+    .eli-meta { font-family: var(--font-body); font-size: .83rem; color: var(--text-light); font-style: italic; }
+    .eli-badge { display: inline-block; font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; padding: .2rem .6rem; font-family: var(--font-body); }
+    .eli-badge.ip { background: var(--gold-pale); color: var(--navy); }
+    .eli-badge.on { background: var(--navy-light); color: var(--white); }
+    .eli-register { font-family: var(--font-body); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(184,145,42,.25); white-space: nowrap; flex-shrink: 0; padding-top: .5rem; }
+
+    /* ── View toggle ──────────────────────────────── */
+    .view-toggle { display: flex; gap: 0; }
+    .view-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-light); padding: .45rem .9rem; cursor: pointer;
+      font-size: .95rem; transition: all var(--transition);
+    }
+    .view-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+    /* ── Past events ──────────────────────────────── */
+    .past-event-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 1rem 0; border-bottom: 1px solid var(--border); gap: 1rem; flex-wrap: wrap;
+    }
+    .past-event-row:last-child { border-bottom: none; }
+    .past-title { font-family: var(--font-display); font-size: .98rem; font-weight: 600; color: var(--text-mid); }
+    .past-meta { font-family: var(--font-body); font-size: .82rem; color: var(--text-light); font-style: italic; margin-top: .2rem; }
+    .past-date { font-family: var(--font-body); font-size: .8rem; letter-spacing: .1em; color: var(--text-light); white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand-wrap" href="index.html">
+      <span class="brand-name">Aldenmere</span>
+      <span class="brand-est">Est. 1847 · Cambridge</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="courses.html" data-page="courses.html">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="faculty.html" data-page="faculty.html">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="students.html" data-page="students.html">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="events.html" data-page="events.html">Events</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link nav-cta" href="#">Apply Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ════════════════════════════════════ -->
+<header class="page-header">
+  <div class="page-header-bg-text">EVENTS</div>
+  <div class="container">
+    <div class="breadcrumb-nav"><a href="index.html">Home</a><span>/</span>Events</div>
+    <h1 class="page-title">Events &amp;<br><em>Lectures</em></h1>
+    <p class="page-subtitle">From the Beveridge Lecture to online research webinars — stay close to Aldenmere's intellectual life, wherever you are.</p>
+  </div>
+</header>
+
+<!-- ══ SUB-NAV ═════════════════════════════════════════ -->
+<nav class="sub-nav">
+  <div class="container">
+    <div class="sub-nav-inner">
+      <a href="#upcoming" class="sub-nav-link active">Upcoming</a>
+      <a href="#open-days" class="sub-nav-link">Open Days</a>
+      <a href="#online" class="sub-nav-link">Online Events</a>
+      <a href="#past" class="sub-nav-link">Past Events</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ FILTER + VIEW TOGGLE ═══════════════════════════ -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="row align-items-center g-2">
+      <div class="col-md-8">
+        <div class="d-flex gap-2 flex-wrap" data-filter-group="etype">
+          <button class="filter-btn active" data-filter="all">All Events</button>
+          <button class="filter-btn" data-filter="lecture">Lectures</button>
+          <button class="filter-btn" data-filter="symposium">Symposia</button>
+          <button class="filter-btn" data-filter="webinar">Webinars</button>
+          <button class="filter-btn" data-filter="open-day">Open Days</button>
+          <button class="filter-btn" data-filter="ceremony">Ceremonies</button>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex justify-content-md-end align-items-center gap-2">
+        <span style="font-family:var(--font-body);font-size:.78rem;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase;">View:</span>
+        <div class="view-toggle">
+          <button class="view-btn active" id="gridViewBtn" title="Grid view"><i class="bi bi-grid-fill"></i></button>
+          <button class="view-btn" id="listViewBtn" title="List view"><i class="bi bi-list-ul"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ UPCOMING EVENTS ════════════════════════════════ -->
+<section id="upcoming" style="padding:3.5rem 0; background:var(--cream);">
+  <div class="container">
+    <span class="section-label">Upcoming Events</span>
+
+    <!-- APRIL -->
+    <div id="events-grid">
+      <div class="month-head">April 2026<span class="month-line"></span></div>
+      <div class="row g-3">
+
+        <!-- Featured -->
+        <div class="col-lg-5" data-filter-target="etype" data-filter-val="lecture">
+          <div class="event-featured reveal">
+            <span class="badge-in-person mb-3"><i class="bi bi-geo-alt-fill"></i>In Person · Aldenmere Hall</span>
+            <div class="event-date-block">
+              <span class="event-day">14</span>
+              <span class="event-month d-block">April 2026</span>
+            </div>
+            <div class="event-title">The Beveridge Lecture: Democracy in the Age of Artificial Intelligence</div>
+            <p class="event-desc">The 77th annual Beveridge Lecture, delivered by Rt. Hon. Dame Claudia Hargreaves. Examining how democratic institutions must evolve to meet the governance challenges posed by large-scale AI deployment.</p>
+            <div class="event-meta-row"><i class="bi bi-person me-1"></i>Rt. Hon. Dame Claudia Hargreaves &nbsp;·&nbsp; <i class="bi bi-clock me-1"></i>18:30–20:00 GMT &nbsp;·&nbsp; <i class="bi bi-people me-1"></i>Capacity: 600</div>
+            <a href="#" class="register-link">Reserve Your Place <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="row g-3 h-100">
+            <div class="col-12 col-md-6" data-filter-target="etype" data-filter-val="webinar">
+              <div class="event-card reveal reveal-delay-1">
+                <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Zoom</span>
+                <div class="event-date-block">
+                  <span class="ev-day">16</span>
+                  <span class="ev-month d-block">April 2026</span>
+                </div>
+                <div class="event-title">Research Spotlight: AI in Drug Discovery</div>
+                <div class="event-meta"><i class="bi bi-person"></i>Dr. A. Osei-Bonsu &nbsp;·&nbsp; <i class="bi bi-clock"></i>12:00 BST</div>
+                <a href="#" class="event-register">Register Free <i class="bi bi-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+            <div class="col-12 col-md-6" data-filter-target="etype" data-filter-val="webinar">
+              <div class="event-card reveal reveal-delay-2">
+                <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Teams</span>
+                <div class="event-date-block">
+                  <span class="ev-day">22</span>
+                  <span class="ev-month d-block">April 2026</span>
+                </div>
+                <div class="event-title">Masterclass: Writing the Doctoral Thesis in the Humanities</div>
+                <div class="event-meta"><i class="bi bi-person"></i>Prof. I. Fontaine &nbsp;·&nbsp; <i class="bi bi-clock"></i>14:00 BST</div>
+                <a href="#" class="event-register">Register Free <i class="bi bi-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+            <div class="col-12 col-md-6" data-filter-target="etype" data-filter-val="lecture">
+              <div class="event-card reveal reveal-delay-1">
+                <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Law Faculty</span>
+                <div class="event-date-block">
+                  <span class="ev-day">24</span>
+                  <span class="ev-month d-block">April 2026</span>
+                </div>
+                <div class="event-title">Annual Thornton Law Lecture: Corporate Liability and Human Rights</div>
+                <div class="event-meta"><i class="bi bi-person"></i>Prof. E. Ashworth &nbsp;·&nbsp; <i class="bi bi-clock"></i>17:00 BST</div>
+                <a href="#" class="event-register">Book a Seat <i class="bi bi-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+            <div class="col-12 col-md-6" data-filter-target="etype" data-filter-val="open-day">
+              <div class="event-card reveal reveal-delay-2">
+                <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Main Campus</span>
+                <div class="event-date-block">
+                  <span class="ev-day">26</span>
+                  <span class="ev-month d-block">April 2026</span>
+                </div>
+                <div class="event-title">Postgraduate Open Day — Spring</div>
+                <div class="event-meta"><i class="bi bi-clock"></i>10:00–15:00 &nbsp;·&nbsp; All Faculties</div>
+                <a href="#" class="event-register">Book a Place <i class="bi bi-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAY -->
+      <div class="month-head">May 2026<span class="month-line"></span></div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="symposium">
+          <div class="event-card reveal">
+            <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Cavendish Wing</span>
+            <div class="event-date-block"><span class="ev-day">05</span><span class="ev-month d-block">May 2026</span></div>
+            <div class="event-title">International Symposium on Climate Finance &amp; Just Transition</div>
+            <div class="event-meta"><i class="bi bi-people"></i>28 Speakers &nbsp;·&nbsp; <i class="bi bi-calendar3"></i>3-Day Event</div>
+            <a href="#" class="event-register">Submit Abstract <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="open-day">
+          <div class="event-card reveal reveal-delay-1">
+            <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Main Campus</span>
+            <div class="event-date-block"><span class="ev-day">17</span><span class="ev-month d-block">May 2026</span></div>
+            <div class="event-title">Undergraduate Open Day — Spring Edition</div>
+            <div class="event-meta"><i class="bi bi-clock"></i>10:00–16:00 &nbsp;·&nbsp; Tours, Talks &amp; Q&amp;A</div>
+            <a href="#" class="event-register">Book a Place <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="webinar">
+          <div class="event-card reveal reveal-delay-2">
+            <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Live Stream</span>
+            <div class="event-date-block"><span class="ev-day">29</span><span class="ev-month d-block">May 2026</span></div>
+            <div class="event-title">Research Frontiers Webinar: Quantum Biology</div>
+            <div class="event-meta"><i class="bi bi-person"></i>Prof. J. Meridith &nbsp;·&nbsp; <i class="bi bi-clock"></i>16:00 BST</div>
+            <a href="#" class="event-register">Join Webinar <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- JUNE -->
+      <div class="month-head">June 2026<span class="month-line"></span></div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="ceremony">
+          <div class="event-card reveal">
+            <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Sheldonian Theatre</span>
+            <div class="event-date-block"><span class="ev-day">10</span><span class="ev-month d-block">June 2026</span></div>
+            <div class="event-title">Encaenia &amp; Commemoration Day — Honorary Degrees</div>
+            <div class="event-meta"><i class="bi bi-star-fill"></i>By Invitation &nbsp;·&nbsp; Academic Dress Required</div>
+            <a href="#" class="event-register">More Information <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="ceremony">
+          <div class="event-card reveal reveal-delay-1">
+            <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person · Main Campus</span>
+            <div class="event-date-block"><span class="ev-day">20</span><span class="ev-month d-block">June 2026</span></div>
+            <div class="event-title">Summer Graduation Ceremonies (Week 1)</div>
+            <div class="event-meta"><i class="bi bi-mortarboard"></i>Undergraduate &amp; Postgraduate</div>
+            <a href="#" class="event-register">Attend as Guest <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-filter-target="etype" data-filter-val="symposium">
+          <div class="event-card reveal reveal-delay-2">
+            <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online &amp; In Person</span>
+            <div class="event-date-block"><span class="ev-day">25</span><span class="ev-month d-block">June 2026</span></div>
+            <div class="event-title">Annual Aldenmere Research Showcase</div>
+            <div class="event-meta"><i class="bi bi-people"></i>150+ Research Posters &amp; Talks</div>
+            <a href="#" class="event-register">Submit Poster <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIST VIEW (hidden by default) -->
+    <div id="events-list" style="display:none;">
+      <div class="month-head">April 2026<span class="month-line"></span></div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="lecture">
+        <div class="eli-date"><div class="eli-day">14</div><div class="eli-month">Apr</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge ip">In Person</span></div>
+          <div class="eli-title">The Beveridge Lecture: Democracy in the Age of Artificial Intelligence</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>18:30–20:00 · Aldenmere Hall · Dame Claudia Hargreaves</div>
+        </div>
+        <a href="#" class="eli-register">Reserve <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="webinar">
+        <div class="eli-date"><div class="eli-day">16</div><div class="eli-month">Apr</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge on">Online · Zoom</span></div>
+          <div class="eli-title">Research Spotlight: AI in Drug Discovery</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>12:00 BST · Dr. A. Osei-Bonsu</div>
+        </div>
+        <a href="#" class="eli-register">Register <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="webinar">
+        <div class="eli-date"><div class="eli-day">22</div><div class="eli-month">Apr</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge on">Online · Teams</span></div>
+          <div class="eli-title">Masterclass: Writing the Doctoral Thesis in the Humanities</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>14:00 BST · Prof. I. Fontaine</div>
+        </div>
+        <a href="#" class="eli-register">Register <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="lecture">
+        <div class="eli-date"><div class="eli-day">24</div><div class="eli-month">Apr</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge ip">In Person</span></div>
+          <div class="eli-title">Annual Thornton Law Lecture: Corporate Liability and Human Rights</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>17:00 BST · Law Faculty · Prof. E. Ashworth</div>
+        </div>
+        <a href="#" class="eli-register">Book <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="open-day">
+        <div class="eli-date"><div class="eli-day">26</div><div class="eli-month">Apr</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge ip">In Person</span></div>
+          <div class="eli-title">Postgraduate Open Day — Spring</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>10:00–15:00 · All Faculties</div>
+        </div>
+        <a href="#" class="eli-register">Book <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+
+      <div class="month-head">May 2026<span class="month-line"></span></div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="symposium">
+        <div class="eli-date"><div class="eli-day">05</div><div class="eli-month">May</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge ip">In Person</span></div>
+          <div class="eli-title">International Symposium on Climate Finance &amp; Just Transition</div>
+          <div class="eli-meta"><i class="bi bi-calendar3 me-1"></i>3-Day Event · Cavendish Wing · 28 Speakers</div>
+        </div>
+        <a href="#" class="eli-register">Abstract <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="open-day">
+        <div class="eli-date"><div class="eli-day">17</div><div class="eli-month">May</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge ip">In Person</span></div>
+          <div class="eli-title">Undergraduate Open Day — Spring Edition</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>10:00–16:00 · Main Campus</div>
+        </div>
+        <a href="#" class="eli-register">Book <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="event-list-item" data-filter-target="etype" data-filter-val="webinar">
+        <div class="eli-date"><div class="eli-day">29</div><div class="eli-month">May</div></div>
+        <div class="eli-divider"></div>
+        <div class="eli-content">
+          <div><span class="eli-badge on">Online</span></div>
+          <div class="eli-title">Research Frontiers Webinar: Quantum Biology</div>
+          <div class="eli-meta"><i class="bi bi-clock me-1"></i>16:00 BST · Prof. J. Meridith</div>
+        </div>
+        <a href="#" class="eli-register">Join <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ OPEN DAYS ═══════════════════════════════════════ -->
+<section id="open-days" style="padding:5rem 0; background:var(--navy);">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5 reveal">
+        <span class="section-label" style="color:var(--gold);">Visit Aldenmere</span>
+        <h2 class="section-heading light">Open Days &amp;<br><em>Campus Tours</em></h2>
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.55);line-height:1.8;margin-top:1rem;font-size:1rem;">Nothing compares to experiencing Aldenmere in person. Join one of our open days to meet faculty, tour the facilities, and get a feel for life on campus.</p>
+        <div class="mt-3">
+          <a href="#" class="btn-gold" style="font-size:.8rem;">Book an Open Day Place</a>
+        </div>
+      </div>
+      <div class="col-lg-7 reveal reveal-delay-2">
+        <div class="row g-2">
+          <div class="col-12">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,145,42,.2);padding:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--white);">Undergraduate Open Day</div>
+                <div style="font-family:var(--font-body);font-size:.85rem;color:rgba(255,255,255,.45);margin-top:.2rem;font-style:italic;">26 April 2026 · 10:00–16:00 · Main Campus</div>
+              </div>
+              <a href="#" class="btn-ghost-white" style="font-size:.75rem;padding:.55rem 1.2rem;">Book Now</a>
+            </div>
+          </div>
+          <div class="col-12">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,145,42,.2);padding:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--white);">Undergraduate Open Day — Spring</div>
+                <div style="font-family:var(--font-body);font-size:.85rem;color:rgba(255,255,255,.45);margin-top:.2rem;font-style:italic;">17 May 2026 · 10:00–16:00 · Main Campus</div>
+              </div>
+              <a href="#" class="btn-ghost-white" style="font-size:.75rem;padding:.55rem 1.2rem;">Book Now</a>
+            </div>
+          </div>
+          <div class="col-12">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,145,42,.2);padding:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--white);">Postgraduate Virtual Open Day</div>
+                <div style="font-family:var(--font-body);font-size:.85rem;color:rgba(255,255,255,.45);margin-top:.2rem;font-style:italic;">07 June 2026 · Online · 10:00–14:00 BST</div>
+              </div>
+              <a href="#" class="btn-ghost-white" style="font-size:.75rem;padding:.55rem 1.2rem;">Register</a>
+            </div>
+          </div>
+          <div class="col-12">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,145,42,.2);padding:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--white);">Self-Guided Campus Tour</div>
+                <div style="font-family:var(--font-body);font-size:.85rem;color:rgba(255,255,255,.45);margin-top:.2rem;font-style:italic;">Available year-round · Weekdays 09:00–17:00</div>
+              </div>
+              <a href="#" class="btn-ghost-white" style="font-size:.75rem;padding:.55rem 1.2rem;">Book a Tour</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ONLINE EVENTS ═══════════════════════════════════ -->
+<section id="online" style="padding:5rem 0; background:var(--cream-dark);">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-lg-7 reveal">
+        <span class="section-label">Wherever You Are</span>
+        <h2 class="section-heading dark">Online Events<br>&amp; <em style="color:var(--gold);font-style:italic;">Webinars</em></h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:1rem;line-height:1.8;margin-top:1rem;">All online events are free to attend. Recordings are archived in our Events Library within 48 hours of broadcast.</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Zoom</span>
+          <div class="event-date-block"><span class="ev-day">16</span><span class="ev-month d-block">Apr 2026</span></div>
+          <div class="event-title">Research Spotlight: AI in Drug Discovery</div>
+          <div class="event-meta"><i class="bi bi-person"></i>Dr. A. Osei-Bonsu &nbsp;·&nbsp; 12:00 BST</div>
+          <a href="#" class="event-register">Register Free <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Teams</span>
+          <div class="event-date-block"><span class="ev-day">22</span><span class="ev-month d-block">Apr 2026</span></div>
+          <div class="event-title">Masterclass: Writing the Doctoral Thesis in the Humanities</div>
+          <div class="event-meta"><i class="bi bi-person"></i>Prof. I. Fontaine &nbsp;·&nbsp; 14:00 BST</div>
+          <a href="#" class="event-register">Register Free <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Live Stream</span>
+          <div class="event-date-block"><span class="ev-day">29</span><span class="ev-month d-block">May 2026</span></div>
+          <div class="event-title">Research Frontiers Webinar: Quantum Biology</div>
+          <div class="event-meta"><i class="bi bi-person"></i>Prof. J. Meridith &nbsp;·&nbsp; 16:00 BST</div>
+          <a href="#" class="event-register">Join Webinar <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online</span>
+          <div class="event-date-block"><span class="ev-day">07</span><span class="ev-month d-block">Jun 2026</span></div>
+          <div class="event-title">Postgraduate Virtual Open Day</div>
+          <div class="event-meta"><i class="bi bi-people"></i>All Faculties &nbsp;·&nbsp; 10:00–14:00 BST</div>
+          <a href="#" class="event-register">Register <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online · Webcast</span>
+          <div class="event-date-block"><span class="ev-day">19</span><span class="ev-month d-block">Jun 2026</span></div>
+          <div class="event-title">Aldenmere in Conversation: The Future of the University</div>
+          <div class="event-meta"><i class="bi bi-person"></i>Vice-Chancellor's Panel &nbsp;·&nbsp; 18:00 BST</div>
+          <a href="#" class="event-register">Watch Live <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <div class="event-card" style="border-left:3px solid var(--navy-light);background:var(--cream);">
+          <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.5rem;">Events Archive</div>
+          <p style="font-family:var(--font-body);font-size:.88rem;color:var(--text-mid);line-height:1.7;">All past online events — lectures, webinars, and panel discussions — are freely available in our online archive.</p>
+          <a href="#" class="event-register">Browse Archive <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PAST EVENTS ════════════════════════════════════ -->
+<section id="past" style="padding:5rem 0; background:var(--cream);">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Recent Past Events</span>
+        <h2 class="section-heading dark">What You<br><em style="color:var(--gold);font-style:italic;">Missed</em></h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:.95rem;line-height:1.8;margin-top:.75rem;">Recordings and write-ups of recent events are available in our archive. Never miss a lecture again.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6 reveal">
+        <div class="past-event-row">
+          <div><div class="past-title">The 76th Beveridge Lecture: Rethinking the Social Contract</div><div class="past-meta">Delivered by Lord Stern of Brentford · Aldenmere Hall</div></div>
+          <div class="past-date">14 Apr 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">Symposium on Post-Conflict Justice &amp; Memory</div><div class="past-meta">Law Faculty · 3 Days · 22 International Speakers</div></div>
+          <div class="past-date">08 Mar 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">Aldenmere Annual Research Showcase 2025</div><div class="past-meta">Online &amp; In-Person · 140 Poster Presentations</div></div>
+          <div class="past-date">25 Jun 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">Public Lecture: The Economics of Biodiversity Loss</div><div class="past-meta">Prof. K. Watanabe · Cavendish Lecture Theatre</div></div>
+          <div class="past-date">02 Feb 2025</div>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <div class="past-event-row">
+          <div><div class="past-title">Webinar Series: Ethics in the Age of AI (6 Sessions)</div><div class="past-meta">Online · 4,200 Registered Attendees</div></div>
+          <div class="past-date">Oct–Dec 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">International Symposium on Pandemic Preparedness</div><div class="past-meta">Medical Sciences · WHO Partnership</div></div>
+          <div class="past-date">15 Sep 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">Summer Graduation Ceremonies 2025</div><div class="past-meta">4,100 Graduates · Main Campus</div></div>
+          <div class="past-date">18–22 Jun 2025</div>
+        </div>
+        <div class="past-event-row">
+          <div><div class="past-title">Thornton Law Lecture: Data Rights and Sovereignty</div><div class="past-meta">Prof. E. Ashworth · Law Faculty</div></div>
+          <div class="past-date">29 Apr 2025</div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4 reveal">
+      <a href="#" class="btn-outline-navy">Browse Full Events Archive</a>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section id="newsletter">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Never Miss an Event</span>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3.5vw,2.4rem);color:var(--navy);">Events Digest</h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);line-height:1.75;margin-top:.75rem;">Receive a monthly listing of upcoming lectures, symposia, and open days directly in your inbox.</p>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" class="newsletter-input" placeholder="Your email address…" />
+          <button class="newsletter-btn">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2"><div class="footer-heading">Discover</div><ul class="footer-links"><li><a href="courses.html">Programmes</a></li><li><a href="faculty.html">Faculty</a></li><li><a href="students.html">Students</a></li><li><a href="events.html">Events</a></li><li><a href="index.html">Home</a></li></ul></div>
+    </div>
+    <hr class="footer-divider" />
+    <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+  </div>
+</footer>
+
+<button id="backTop"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/shared.js"></script>
+<script>
+  // Grid / List view toggle
+  const gridView = document.getElementById('events-grid');
+  const listView = document.getElementById('events-list');
+  const gridBtn  = document.getElementById('gridViewBtn');
+  const listBtn  = document.getElementById('listViewBtn');
+
+  gridBtn.addEventListener('click', () => {
+    gridView.style.display = ''; listView.style.display = 'none';
+    gridBtn.classList.add('active'); listBtn.classList.remove('active');
+  });
+  listBtn.addEventListener('click', () => {
+    listView.style.display = ''; gridView.style.display = 'none';
+    listBtn.classList.add('active'); gridBtn.classList.remove('active');
+  });
+
+  // Wire filter to both views
+  document.querySelectorAll('[data-filter-group="etype"] .filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.filter;
+      // Grid items
+      document.querySelectorAll('#events-grid [data-filter-target="etype"]').forEach(el => {
+        el.style.display = (val === 'all' || el.dataset.filterVal === val) ? '' : 'none';
+      });
+      // List items
+      document.querySelectorAll('#events-list [data-filter-target="etype"]').forEach(el => {
+        el.style.display = (val === 'all' || el.dataset.filterVal === val) ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

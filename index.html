@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aldenmere University — Since 1847</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="assets/shared.css" rel="stylesheet" />
+  <style>
+    /* ── Hero ─────────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      background: var(--navy);
+      position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .5; pointer-events: none; z-index: 2;
+    }
+    .hero-image-layer {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(11,25,41,.25) 0%, rgba(11,25,41,.65) 55%, rgba(11,25,41,.97) 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(184,145,42,.03) 60px, rgba(184,145,42,.03) 61px),
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(184,145,42,.03) 60px, rgba(184,145,42,.03) 61px);
+      background-color: #0d1e35;
+    }
+    .hero-arch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: min(500px, 100%); height: 100%;
+      background: linear-gradient(180deg, rgba(184,145,42,.06) 0%, transparent 50%);
+      clip-path: ellipse(50% 60% at 50% 0%);
+      pointer-events: none; z-index: 1;
+    }
+    .hero-content {
+      position: relative; z-index: 3;
+      padding: 8rem 0 5rem; width: 100%;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-body); font-size: .75rem;
+      letter-spacing: .45em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem; display: block;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s .2s forwards;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(2.8rem, 8vw, 7rem);
+      font-weight: 900; line-height: 1.0; color: var(--white); margin: 0;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1s .4s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-subtitle {
+      font-family: var(--font-accent); font-size: clamp(1rem, 2.5vw, 1.45rem);
+      color: rgba(255,255,255,.62); font-weight: 300; font-style: italic;
+      margin-top: 1.5rem; max-width: 540px; line-height: 1.65;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .9s .7s forwards;
+    }
+    .hero-actions {
+      margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+      opacity: 0; animation: fadeUp .8s 1s forwards;
+    }
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 5; display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      opacity: 0; animation: fadeIn 1s 1.5s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    .scroll-text { font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+
+    /* ── Stats bar ────────────────────────────────── */
+    .stats-bar {
+      background: var(--navy-mid);
+      border-top: 1px solid rgba(184,145,42,.18);
+      border-bottom: 1px solid rgba(184,145,42,.18);
+      padding: 1.5rem 0;
+    }
+    .stat-item { text-align: center; padding: .75rem 1rem; border-right: 1px solid rgba(184,145,42,.12); }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 700; color: var(--gold-light); line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-body); font-size: .72rem;
+      letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: .3rem;
+    }
+
+    /* ── Teaser section shared ────────────────────── */
+    .teaser-section { padding: 6rem 0; }
+    .teaser-section + .teaser-section { border-top: 1px solid var(--border); }
+
+    /* ── Program cards ────────────────────────────── */
+    .program-card {
+      border: 1px solid rgba(184,145,42,.2); background: rgba(255,255,255,.03);
+      padding: 1.75rem; position: relative; transition: all var(--transition); height: 100%;
+    }
+    .program-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gold); transform: scaleX(0); transition: transform var(--transition);
+    }
+    .program-card:hover { border-color: rgba(184,145,42,.5); background: rgba(255,255,255,.06); transform: translateY(-4px); }
+    .program-card:hover::before { transform: scaleX(1); }
+    .program-num { font-family: var(--font-body); font-size: .72rem; letter-spacing: .28em; color: var(--gold); margin-bottom: .9rem; }
+    .program-name { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: .6rem; line-height: 1.3; }
+    .program-desc { font-family: var(--font-body); font-size: .92rem; color: rgba(255,255,255,.48); line-height: 1.7; margin-bottom: 1.1rem; }
+    .program-meta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .program-meta span { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-family: var(--font-body); }
+    .program-arrow { position: absolute; bottom: 1.25rem; right: 1.25rem; color: rgba(184,145,42,.28); font-size: 1.1rem; transition: color var(--transition), transform var(--transition); }
+    .program-card:hover .program-arrow { color: var(--gold); transform: translate(3px,-3px); }
+
+    /* ── Faculty teaser cards ─────────────────────── */
+    .faculty-card { position: relative; overflow: hidden; transition: transform var(--transition); }
+    .faculty-card:hover { transform: translateY(-5px); }
+    .faculty-photo { aspect-ratio: 3/4; position: relative; overflow: hidden; }
+    .faculty-info { padding: 1.1rem 0 .4rem; border-bottom: 1px solid var(--border); }
+    .faculty-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: .15rem; }
+    .faculty-dept { font-family: var(--font-body); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+    .faculty-specialty { font-family: var(--font-body); font-style: italic; color: var(--text-light); font-size: .88rem; margin-top: .3rem; }
+
+    /* ── Research teaser ──────────────────────────── */
+    .research-card {
+      background: var(--white); border-bottom: 3px solid var(--border);
+      padding: 1.75rem; transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); height: 100%;
+    }
+    .research-card:hover { border-color: var(--gold); box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    .research-tag { display: inline-block; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--border); padding: .22rem .7rem; font-family: var(--font-body); margin-bottom: .9rem; }
+    .research-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--navy); margin-bottom: .65rem; line-height: 1.35; }
+    .research-excerpt { font-family: var(--font-body); color: var(--text-mid); font-size: .92rem; line-height: 1.75; }
+    .research-byline { font-family: var(--font-body); font-size: .8rem; color: var(--text-light); margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid var(--cream-dark); font-style: italic; }
+
+    /* ── Events teaser ────────────────────────────── */
+    .event-card {
+      border: 1px solid var(--border); padding: 1.5rem; background: var(--white);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); height: 100%;
+    }
+    .event-card:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); transform: translateY(-3px); }
+    .event-date { display: flex; align-items: baseline; gap: .45rem; margin-bottom: .6rem; }
+    .event-day { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--navy); line-height: 1; }
+    .event-month { font-family: var(--font-body); font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-light); }
+    .event-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--navy); margin-bottom: .45rem; line-height: 1.35; }
+    .event-meta { font-family: var(--font-body); font-size: .83rem; color: var(--text-light); font-style: italic; }
+
+    /* ── Animations ───────────────────────────────── */
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes scrollPulse { 0%,100% { opacity:1; transform:scaleY(1); } 50% { opacity:.4; transform:scaleY(.7); } }
+
+    @media (max-width:767px) {
+      .stats-bar .stat-item { border-right: none; border-bottom: 1px solid rgba(184,145,42,.1); }
+      .stats-bar .stat-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand-wrap" href="index.html">
+      <span class="brand-name">Aldenmere</span>
+      <span class="brand-est">Est. 1847 · Cambridge</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="courses.html" data-page="courses.html">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="faculty.html" data-page="faculty.html">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="students.html" data-page="students.html">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="events.html" data-page="events.html">Events</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link nav-cta" href="#">Apply Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO ════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-image-layer"></div>
+  <div class="hero-arch"></div>
+  <div class="hero-content">
+    <div class="container">
+      <div class="col-lg-9">
+        <span class="hero-eyebrow">University of Aldenmere</span>
+        <h1 class="hero-title">Where <em>Knowledge</em><br>Meets Legacy</h1>
+        <p class="hero-subtitle">For over a century and a half, Aldenmere has shaped the minds that shape the world — through rigorous scholarship, pioneering research, and an unwavering commitment to human flourishing.</p>
+        <div class="hero-actions">
+          <a href="courses.html" class="btn-gold">Explore Programmes</a>
+          <a href="faculty.html" class="btn-ghost-white">Meet the Faculty</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span class="scroll-text">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ STATS ═══════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="row g-0">
+      <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number">24,800</div><div class="stat-label">Enrolled Students</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number">1,400+</div><div class="stat-label">Faculty Members</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number">186</div><div class="stat-label">Research Centres</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-item"><div class="stat-number">177 yrs</div><div class="stat-label">Of Excellence</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT TEASER ════════════════════════════════════ -->
+<section class="teaser-section" style="background:var(--cream);">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5 reveal">
+        <div style="height:380px;"><div class="img-placeholder"><i class="bi bi-building-fill"></i><span>Historic Main Hall</span></div></div>
+      </div>
+      <div class="col-lg-7 reveal reveal-delay-2">
+        <span class="section-label">About the University</span>
+        <h2 class="section-heading dark">A Tradition of<br><em style="font-style:italic;color:var(--gold);">Intellectual Daring</em></h2>
+        <p style="font-family:var(--font-body);font-size:1.08rem;color:var(--text-mid);line-height:1.85;margin-top:1.25rem;">
+          Founded in 1847 on the banks of the River Alden, the University of Aldenmere has grown from a small college of philosophy and natural sciences into one of the world's foremost centres of higher learning. Our 14 faculties encompass disciplines from ancient languages to quantum computing.
+        </p>
+        <p style="font-family:var(--font-body);font-size:1.08rem;color:var(--text-mid);line-height:1.85;margin-top:.75rem;">
+          Aldenmere graduates occupy positions of leadership across government, industry, medicine, and the arts. Our alumni network spans 160 countries.
+        </p>
+        <div class="mt-3">
+          <a href="students.html" class="link-gold">Student Life at Aldenmere <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROGRAMMES TEASER ═══════════════════════════════ -->
+<section class="teaser-section" style="background:var(--navy);">
+  <div class="container">
+    <div class="row mb-4 align-items-end">
+      <div class="col-lg-7 reveal">
+        <span class="section-label" style="color:var(--gold);">Academic Programmes</span>
+        <h2 class="section-heading light">Disciplines That<br><em>Define Futures</em></h2>
+      </div>
+      <div class="col-lg-5 text-lg-end reveal reveal-delay-2">
+        <a href="courses.html" class="btn-ghost-white">View All 120 Programmes <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4 reveal">
+        <a href="courses.html#law" style="text-decoration:none;">
+          <div class="program-card">
+            <div class="program-num">01 / Law &amp; Political Science</div>
+            <div class="program-name">Faculty of Law &amp; Governance</div>
+            <p class="program-desc">Constitutional law, international relations, and jurisprudence. Shaping tomorrow's legal minds.</p>
+            <div class="program-meta"><span><i class="bi bi-clock me-1"></i>3–4 Years</span><span><i class="bi bi-mortarboard me-1"></i>BSc · LLM · PhD</span></div>
+            <i class="bi bi-arrow-up-right program-arrow"></i>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+        <a href="courses.html#medicine" style="text-decoration:none;">
+          <div class="program-card">
+            <div class="program-num">02 / Medicine &amp; Health Sciences</div>
+            <div class="program-name">School of Medical Sciences</div>
+            <p class="program-desc">World-class clinical training combined with cutting-edge biomedical research.</p>
+            <div class="program-meta"><span><i class="bi bi-clock me-1"></i>5–6 Years</span><span><i class="bi bi-mortarboard me-1"></i>MBBS · MSc · MD</span></div>
+            <i class="bi bi-arrow-up-right program-arrow"></i>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+        <a href="courses.html#engineering" style="text-decoration:none;">
+          <div class="program-card">
+            <div class="program-num">03 / Engineering &amp; Computing</div>
+            <div class="program-name">Faculty of Engineering</div>
+            <p class="program-desc">Interdisciplinary programmes bridging theory and real-world engineering impact.</p>
+            <div class="program-meta"><span><i class="bi bi-clock me-1"></i>4 Years</span><span><i class="bi bi-mortarboard me-1"></i>BEng · MEng · PhD</span></div>
+            <i class="bi bi-arrow-up-right program-arrow"></i>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FACULTY TEASER ══════════════════════════════════ -->
+<section class="teaser-section" style="background:var(--cream);">
+  <div class="container">
+    <div class="row mb-4 align-items-end">
+      <div class="col-lg-7 reveal">
+        <span class="section-label">Our Faculty</span>
+        <h2 class="section-heading dark">Scholars of<br><em style="color:var(--gold);font-style:italic;">International Renown</em></h2>
+      </div>
+      <div class="col-lg-5 text-lg-end reveal reveal-delay-2">
+        <a href="faculty.html" class="btn-outline-navy">Meet All Faculty <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-6 col-lg-3 reveal">
+        <div class="faculty-card">
+          <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div></div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. Eleanor Ashworth</div>
+            <div class="faculty-dept">School of Law</div>
+            <div class="faculty-specialty">International Human Rights</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 reveal reveal-delay-1">
+        <div class="faculty-card">
+          <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div></div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. James Meridith</div>
+            <div class="faculty-dept">Dept. of Physics</div>
+            <div class="faculty-specialty">Quantum Field Theory</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 reveal reveal-delay-2">
+        <div class="faculty-card">
+          <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div></div>
+          <div class="faculty-info">
+            <div class="faculty-name">Dr. Amara Osei-Bonsu</div>
+            <div class="faculty-dept">Medical Sciences</div>
+            <div class="faculty-specialty">Molecular Oncology</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 reveal reveal-delay-3">
+        <div class="faculty-card">
+          <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div></div>
+          <div class="faculty-info">
+            <div class="faculty-name">Prof. Isabelle Fontaine</div>
+            <div class="faculty-dept">Humanities</div>
+            <div class="faculty-specialty">Medieval European History</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EVENTS TEASER ═══════════════════════════════════ -->
+<section class="teaser-section" style="background:var(--cream-dark);">
+  <div class="container">
+    <div class="row mb-4 align-items-end">
+      <div class="col-lg-7 reveal">
+        <span class="section-label">Upcoming Events</span>
+        <h2 class="section-heading dark">Life at<br><em style="color:var(--gold);font-style:italic;">Aldenmere</em></h2>
+      </div>
+      <div class="col-lg-5 text-lg-end reveal reveal-delay-2">
+        <a href="events.html" class="btn-outline-navy">Full Events Calendar <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4 reveal">
+        <div class="event-card">
+          <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person</span>
+          <div class="event-date"><span class="event-day">14</span><span class="event-month">April 2026</span></div>
+          <div class="event-title">The Beveridge Lecture: Democracy in the Age of AI</div>
+          <div class="event-meta"><i class="bi bi-person me-1"></i>Dame Claudia Hargreaves · 18:30</div>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-delay-1">
+        <div class="event-card">
+          <span class="badge-online mb-2"><i class="bi bi-camera-video-fill"></i>Online</span>
+          <div class="event-date"><span class="event-day">22</span><span class="event-month">April 2026</span></div>
+          <div class="event-title">Masterclass: Writing the Doctoral Thesis</div>
+          <div class="event-meta"><i class="bi bi-person me-1"></i>Prof. I. Fontaine · 14:00 BST</div>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-delay-2">
+        <div class="event-card">
+          <span class="badge-in-person mb-2"><i class="bi bi-geo-alt-fill"></i>In Person</span>
+          <div class="event-date"><span class="event-day">05</span><span class="event-month">May 2026</span></div>
+          <div class="event-title">International Symposium on Climate Finance</div>
+          <div class="event-meta"><i class="bi bi-people me-1"></i>28 Speakers · 3-Day Event</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ NEWSLETTER ══════════════════════════════════════ -->
+<section id="newsletter">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <span class="section-label">Stay Connected</span>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3.5vw,2.5rem);color:var(--navy);">The Aldenmere Review</h2>
+        <p style="font-family:var(--font-body);color:var(--text-mid);font-size:1rem;line-height:1.75;margin-top:.75rem;">Monthly dispatches of research highlights, upcoming events, and university news — curated for inquiring minds.</p>
+      </div>
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" class="newsletter-input" placeholder="Your email address…" />
+          <button class="newsletter-btn" type="submit">Subscribe</button>
+        </form>
+        <p style="font-family:var(--font-body);font-size:.76rem;color:var(--text-light);font-style:italic;margin-top:.65rem;">Approximately 4 issues per year. Unsubscribe at any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <p style="font-family:var(--font-body);color:rgba(255,255,255,.3);font-size:.86rem;line-height:1.8;margin-top:1.1rem;">
+          Aldenmere Road, Cambridge<br>CB2 1TN, United Kingdom<br>
+          <a href="tel:+441223000000" style="color:rgba(255,255,255,.3);text-decoration:none;">+44 1223 000 000</a>
+        </p>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Study</div>
+        <ul class="footer-links">
+          <li><a href="courses.html">Undergraduate</a></li>
+          <li><a href="courses.html#postgraduate">Postgraduate</a></li>
+          <li><a href="courses.html#doctoral">Doctoral</a></li>
+          <li><a href="#">Online Learning</a></li>
+          <li><a href="#">How to Apply</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Discover</div>
+        <ul class="footer-links">
+          <li><a href="faculty.html">Faculty</a></li>
+          <li><a href="students.html">Student Life</a></li>
+          <li><a href="events.html">Events</a></li>
+          <li><a href="#">Research</a></li>
+          <li><a href="#">Library</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">About</div>
+        <ul class="footer-links">
+          <li><a href="#">History</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Rankings</a></li>
+          <li><a href="#">Alumni</a></li>
+          <li><a href="#">Give to Aldenmere</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="#">Admissions</a></li>
+          <li><a href="#">Press Office</a></li>
+          <li><a href="#">IT Services</a></li>
+          <li><a href="#">Campus Map</a></li>
+          <li><a href="#">Accessibility</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="footer-divider" />
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+      <div class="d-flex gap-3 flex-wrap">
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.22);text-decoration:none;">Privacy Policy</a>
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.22);text-decoration:none;">Cookie Policy</a>
+        <a href="#" style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.22);text-decoration:none;">Legal Notices</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="Back to top"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/shared.js"></script>
+<script>
+  const heroContent = document.querySelector('.hero-content');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < window.innerHeight)
+      heroContent.style.transform = `translateY(${window.scrollY * 0.2}px)`;
+  }, { passive: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculty — Aldenmere University</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="assets/shared.css" rel="stylesheet" />
+  <style>
+    /* ── Filter Bar ───────────────────────────────── */
+    .filter-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: 1.1rem 0; position: sticky; top: 56px; z-index: 890;
+    }
+    .filter-btn {
+      font-family: var(--font-body); font-size: .76rem;
+      letter-spacing: .14em; text-transform: uppercase;
+      padding: .42rem 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-mid);
+      cursor: pointer; border-radius: 0; transition: all var(--transition); white-space: nowrap;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--navy); border-color: var(--navy); color: var(--white);
+    }
+
+    /* ── Faculty Card ─────────────────────────────── */
+    .faculty-card {
+      background: var(--white); border: 1px solid var(--border);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      cursor: pointer; overflow: hidden;
+    }
+    .faculty-card:hover {
+      border-color: var(--gold); box-shadow: var(--shadow-md);
+      transform: translateY(-5px);
+    }
+    .faculty-photo {
+      aspect-ratio: 3/4; position: relative; overflow: hidden;
+    }
+    .faculty-photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(11,25,41,.85) 0%, transparent 50%);
+      opacity: 0; transition: opacity var(--transition);
+      display: flex; align-items: flex-end; padding: 1.25rem;
+    }
+    .faculty-card:hover .faculty-photo-overlay { opacity: 1; }
+    .overlay-hint {
+      font-family: var(--font-body); font-size: .72rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--gold);
+    }
+    .faculty-info { padding: 1.1rem 1.25rem 1.25rem; }
+    .faculty-name {
+      font-family: var(--font-display); font-size: 1.05rem;
+      font-weight: 700; color: var(--navy); margin-bottom: .15rem; line-height: 1.25;
+    }
+    .faculty-title {
+      font-family: var(--font-body); font-size: .78rem;
+      color: var(--gold); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .35rem;
+    }
+    .faculty-dept {
+      font-family: var(--font-body); font-size: .85rem;
+      color: var(--text-light); font-style: italic;
+    }
+    .faculty-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .75rem; }
+    .faculty-tag {
+      font-family: var(--font-body); font-size: .65rem;
+      letter-spacing: .12em; text-transform: uppercase;
+      border: 1px solid var(--border); color: var(--text-mid);
+      padding: .18rem .55rem;
+    }
+
+    /* ── Profile Modal ────────────────────────────── */
+    .profile-header {
+      display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 1.5rem;
+    }
+    .profile-avatar {
+      width: 100px; height: 130px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.2); font-size: 2.5rem;
+    }
+    .profile-name {
+      font-family: var(--font-display); font-size: 1.45rem;
+      font-weight: 700; color: var(--navy); line-height: 1.2;
+    }
+    .profile-role {
+      font-family: var(--font-body); font-size: .8rem;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--gold); margin: .4rem 0 .5rem;
+    }
+    .profile-contact { font-family: var(--font-body); font-size: .88rem; color: var(--text-mid); line-height: 1.7; }
+    .profile-contact i { width: 16px; color: var(--gold); }
+    .profile-section {
+      font-family: var(--font-display); font-size: 1rem;
+      font-weight: 700; color: var(--navy);
+      margin: 1.25rem 0 .65rem;
+      padding-bottom: .4rem; border-bottom: 1px solid var(--border);
+    }
+    .profile-bio { font-family: var(--font-body); font-size: .95rem; color: var(--text-mid); line-height: 1.8; }
+    .research-interest {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--font-body); font-size: .82rem; color: var(--text-mid);
+      background: var(--cream); border: 1px solid var(--border);
+      padding: .28rem .8rem; margin: .25rem .2rem 0 0;
+    }
+    .research-interest i { color: var(--gold); font-size: .72rem; }
+    .pub-item {
+      font-family: var(--font-body); font-size: .88rem; color: var(--text-mid);
+      line-height: 1.6; padding: .6rem 0; border-bottom: 1px solid var(--cream-dark);
+    }
+    .pub-item:last-child { border-bottom: none; }
+    .pub-journal { color: var(--gold); font-style: normal; }
+    .office-hours-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .6rem;
+      font-family: var(--font-body); font-size: .88rem;
+    }
+    .oh-slot {
+      background: var(--cream); padding: .55rem .9rem;
+      font-size: .83rem; color: var(--text-mid);
+    }
+    .oh-slot strong { color: var(--navy); display: block; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .15rem; }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav id="mainNav" class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand-wrap" href="index.html">
+      <span class="brand-name">Aldenmere</span>
+      <span class="brand-est">Est. 1847 · Cambridge</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="courses.html" data-page="courses.html">Programmes</a></li>
+        <li class="nav-item"><a class="nav-link" href="faculty.html" data-page="faculty.html">Faculty</a></li>
+        <li class="nav-item"><a class="nav-link" href="students.html" data-page="students.html">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="events.html" data-page="events.html">Events</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link nav-cta" href="#">Apply Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ════════════════════════════════════ -->
+<header class="page-header">
+  <div class="page-header-bg-text">FACULTY</div>
+  <div class="container">
+    <div class="breadcrumb-nav"><a href="index.html">Home</a><span>/</span>Faculty</div>
+    <h1 class="page-title">Our <em>Faculty</em></h1>
+    <p class="page-subtitle">1,400 scholars, scientists, and practitioners — each at the forefront of their discipline.</p>
+  </div>
+</header>
+
+<!-- ══ SUB-NAV ═════════════════════════════════════════ -->
+<nav class="sub-nav">
+  <div class="container">
+    <div class="sub-nav-inner">
+      <a href="#all" class="sub-nav-link active">All Faculty</a>
+      <a href="#law-f" class="sub-nav-link">Law</a>
+      <a href="#medicine-f" class="sub-nav-link">Medicine</a>
+      <a href="#engineering-f" class="sub-nav-link">Engineering</a>
+      <a href="#humanities-f" class="sub-nav-link">Humanities</a>
+      <a href="#business-f" class="sub-nav-link">Business</a>
+      <a href="#sciences-f" class="sub-nav-link">Sciences</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ FILTER & SEARCH ════════════════════════════════ -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="row align-items-center g-2">
+      <div class="col-md-4">
+        <input type="search" class="form-control" placeholder="Search by name or research area…" data-search-target="faculty-card" />
+      </div>
+      <div class="col-md-8">
+        <div class="d-flex gap-2 flex-wrap" data-filter-group="dept">
+          <button class="filter-btn active" data-filter="all">All Departments</button>
+          <button class="filter-btn" data-filter="law">Law</button>
+          <button class="filter-btn" data-filter="medicine">Medicine</button>
+          <button class="filter-btn" data-filter="engineering">Engineering</button>
+          <button class="filter-btn" data-filter="humanities">Humanities</button>
+          <button class="filter-btn" data-filter="business">Business</button>
+          <button class="filter-btn" data-filter="sciences">Sciences</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FACULTY GRID ════════════════════════════════════ -->
+<section id="all" style="padding:3.5rem 0 6rem; background:var(--cream);">
+  <div class="container">
+
+    <!-- ── Law ── -->
+    <div id="law-f" style="margin-bottom:3rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:32px;background:var(--gold);flex-shrink:0;"></div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy);margin:0;">Faculty of Law &amp; Governance</h2>
+      </div>
+      <div class="row g-3">
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal" data-filter-target="dept" data-filter-val="law" data-search-text="eleanor ashworth human rights international law professor">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile <i class="bi bi-arrow-up-right ms-1"></i></span></div>
+            </div>
+            <div class="faculty-info" data-bs-toggle="modal" data-bs-target="#modal-ashworth">
+              <div class="faculty-title">Professor</div>
+              <div class="faculty-name">Eleanor Ashworth</div>
+              <div class="faculty-dept">International Human Rights Law</div>
+              <div class="faculty-tags">
+                <span class="faculty-tag">Human Rights</span>
+                <span class="faculty-tag">EU Law</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-1" data-filter-target="dept" data-filter-val="law" data-search-text="richard pemberton constitutional administrative law reader">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile <i class="bi bi-arrow-up-right ms-1"></i></span></div>
+            </div>
+            <div class="faculty-info" data-bs-toggle="modal" data-bs-target="#modal-pemberton">
+              <div class="faculty-title">Reader</div>
+              <div class="faculty-name">Richard Pemberton</div>
+              <div class="faculty-dept">Constitutional Law</div>
+              <div class="faculty-tags">
+                <span class="faculty-tag">Judicial Review</span>
+                <span class="faculty-tag">Devolution</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-2" data-filter-target="dept" data-filter-val="law" data-search-text="miriam okafor criminal justice sentencing associate professor">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div>
+            </div>
+            <div class="faculty-info">
+              <div class="faculty-title">Associate Professor</div>
+              <div class="faculty-name">Miriam Okafor</div>
+              <div class="faculty-dept">Criminal Justice</div>
+              <div class="faculty-tags"><span class="faculty-tag">Sentencing</span><span class="faculty-tag">Race &amp; Law</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Medicine ── -->
+    <div id="medicine-f" style="margin-bottom:3rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:32px;background:var(--gold);flex-shrink:0;"></div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy);margin:0;">School of Medical Sciences</h2>
+      </div>
+      <div class="row g-3">
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal" data-filter-target="dept" data-filter-val="medicine" data-search-text="amara osei-bonsu oncology molecular cancer research associate professor">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile <i class="bi bi-arrow-up-right ms-1"></i></span></div>
+            </div>
+            <div class="faculty-info" data-bs-toggle="modal" data-bs-target="#modal-osei">
+              <div class="faculty-title">Associate Professor</div>
+              <div class="faculty-name">Dr. Amara Osei-Bonsu</div>
+              <div class="faculty-dept">Molecular Oncology</div>
+              <div class="faculty-tags"><span class="faculty-tag">mRNA Vaccines</span><span class="faculty-tag">Cancer</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-1" data-filter-target="dept" data-filter-val="medicine" data-search-text="thomas bryce neuroscience cardiology professor">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div>
+            </div>
+            <div class="faculty-info">
+              <div class="faculty-title">Professor</div>
+              <div class="faculty-name">Prof. Thomas Bryce</div>
+              <div class="faculty-dept">Cardiovascular Medicine</div>
+              <div class="faculty-tags"><span class="faculty-tag">Cardiology</span><span class="faculty-tag">Clinical Trials</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-2" data-filter-target="dept" data-filter-val="medicine" data-search-text="priya nair neuroscience psychiatry lecturer">
+          <div class="faculty-card">
+            <div class="faculty-photo">
+              <div class="img-placeholder"><i class="bi bi-person-fill"></i></div>
+              <div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div>
+            </div>
+            <div class="faculty-info">
+              <div class="faculty-title">Lecturer</div>
+              <div class="faculty-name">Dr. Priya Nair</div>
+              <div class="faculty-dept">Clinical Neuroscience</div>
+              <div class="faculty-tags"><span class="faculty-tag">Neurodegeneration</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Engineering ── -->
+    <div id="engineering-f" style="margin-bottom:3rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:32px;background:var(--gold);flex-shrink:0;"></div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy);margin:0;">Faculty of Engineering &amp; Computing</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal" data-filter-target="dept" data-filter-val="engineering" data-search-text="tarquin blackwood ai machine learning interpretability professor">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div></div>
+            <div class="faculty-info">
+              <div class="faculty-title">Professor</div>
+              <div class="faculty-name">Prof. Tarquin Blackwood</div>
+              <div class="faculty-dept">Artificial Intelligence</div>
+              <div class="faculty-tags"><span class="faculty-tag">AI Ethics</span><span class="faculty-tag">XAI</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-1" data-filter-target="dept" data-filter-val="engineering" data-search-text="sasha korolev robotics computer vision senior lecturer">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div></div>
+            <div class="faculty-info">
+              <div class="faculty-title">Senior Lecturer</div>
+              <div class="faculty-name">Dr. Sasha Korolev</div>
+              <div class="faculty-dept">Robotics &amp; Computer Vision</div>
+              <div class="faculty-tags"><span class="faculty-tag">Robotics</span><span class="faculty-tag">CV</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Humanities ── -->
+    <div id="humanities-f" style="margin-bottom:3rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:32px;background:var(--gold);flex-shrink:0;"></div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy);margin:0;">Faculty of Arts &amp; Humanities</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal" data-filter-target="dept" data-filter-val="humanities" data-search-text="isabelle fontaine medieval history professor">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile <i class="bi bi-arrow-up-right ms-1"></i></span></div></div>
+            <div class="faculty-info" data-bs-toggle="modal" data-bs-target="#modal-fontaine">
+              <div class="faculty-title">Professor</div>
+              <div class="faculty-name">Prof. Isabelle Fontaine</div>
+              <div class="faculty-dept">Medieval European History</div>
+              <div class="faculty-tags"><span class="faculty-tag">Medievalism</span><span class="faculty-tag">Gender</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-1" data-filter-target="dept" data-filter-val="humanities" data-search-text="oliver strand literary theory postcolonial studies reader">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div></div>
+            <div class="faculty-info">
+              <div class="faculty-title">Reader</div>
+              <div class="faculty-name">Oliver Strand</div>
+              <div class="faculty-dept">Postcolonial Literature</div>
+              <div class="faculty-tags"><span class="faculty-tag">Postcolonialism</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sciences ── -->
+    <div id="sciences-f" style="margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:32px;background:var(--gold);flex-shrink:0;"></div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy);margin:0;">Faculty of Natural Sciences</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal" data-filter-target="dept" data-filter-val="sciences" data-search-text="james meridith quantum physics field theory professor">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile <i class="bi bi-arrow-up-right ms-1"></i></span></div></div>
+            <div class="faculty-info" data-bs-toggle="modal" data-bs-target="#modal-meridith">
+              <div class="faculty-title">Professor</div>
+              <div class="faculty-name">Prof. James Meridith</div>
+              <div class="faculty-dept">Theoretical Physics</div>
+              <div class="faculty-tags"><span class="faculty-tag">Quantum</span><span class="faculty-tag">Field Theory</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 faculty-card reveal reveal-delay-1" data-filter-target="dept" data-filter-val="sciences" data-search-text="keiko watanabe climate chemistry ocean lecturer">
+          <div class="faculty-card">
+            <div class="faculty-photo"><div class="img-placeholder"><i class="bi bi-person-fill"></i></div><div class="faculty-photo-overlay"><span class="overlay-hint">View Profile</span></div></div>
+            <div class="faculty-info">
+              <div class="faculty-title">Senior Lecturer</div>
+              <div class="faculty-name">Dr. Keiko Watanabe</div>
+              <div class="faculty-dept">Climate Chemistry</div>
+              <div class="faculty-tags"><span class="faculty-tag">Ocean Alkalinity</span><span class="faculty-tag">Carbon</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ PROFILE MODALS ═════════════════════════════════ -->
+
+<!-- Ashworth -->
+<div class="modal fade" id="modal-ashworth" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Faculty Profile</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="profile-header">
+          <div class="profile-avatar"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <div class="profile-name">Professor Eleanor Ashworth</div>
+            <div class="profile-role">Chair of International Human Rights Law · Faculty of Law &amp; Governance</div>
+            <div class="profile-contact">
+              <div><i class="bi bi-envelope me-2"></i>e.ashworth@aldenmere.ac.uk</div>
+              <div><i class="bi bi-geo-alt me-2"></i>Lacy Building, Room 3.14</div>
+              <div><i class="bi bi-telephone me-2"></i>+44 1223 110 421</div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-section">Biography</div>
+        <p class="profile-bio">Eleanor Ashworth is one of the UK's foremost authorities on international human rights law. She served as a legal adviser to the UN Human Rights Committee (2014–2019) and as a member of the Council of Europe's Venice Commission. Her scholarship has influenced landmark judgments at the European Court of Human Rights, and she has provided expert evidence to parliamentary committees on Brexit's impact on rights protections.</p>
+        <p class="profile-bio" style="margin-top:.75rem;">Prior to Aldenmere, she held chairs at Edinburgh and the European University Institute, Florence. She is a Fellow of the British Academy and was appointed CBE in the 2022 New Year Honours for services to legal scholarship.</p>
+
+        <div class="profile-section">Research Interests</div>
+        <div>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>International Human Rights Law</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>European Court of Human Rights</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>UN Treaty Bodies</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Refugee &amp; Migration Law</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Transitional Justice</span>
+        </div>
+
+        <div class="profile-section">Selected Publications</div>
+        <div class="pub-item">Ashworth, E. (2024). 'Proportionality and the Living Instrument Doctrine.' <span class="pub-journal">European Human Rights Law Review</span>, 12(3), 201–228.</div>
+        <div class="pub-item">Ashworth, E. &amp; Müller, H. (2022). <em>Accountability Without Borders: Extraterritorial Human Rights Obligations</em>. Cambridge University Press.</div>
+        <div class="pub-item">Ashworth, E. (2020). 'The Collapse of the Deference Doctrine in Strasbourg.' <span class="pub-journal">Oxford Journal of Legal Studies</span>, 40(2), 345–378.</div>
+        <div class="pub-item">Ashworth, E. (2018). <em>Rights in the Balance: Courts, Legislatures and the Protection of Fundamental Freedoms</em>. Hart Publishing.</div>
+
+        <div class="profile-section">Office Hours</div>
+        <div class="office-hours-grid">
+          <div class="oh-slot"><strong>Tuesday</strong>14:00 – 16:00</div>
+          <div class="oh-slot"><strong>Thursday</strong>10:00 – 11:30</div>
+          <div class="oh-slot" style="grid-column:1/-1;"><strong>By Appointment</strong>Email e.ashworth@aldenmere.ac.uk</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Full CV (PDF)</a>
+        <a href="mailto:e.ashworth@aldenmere.ac.uk" class="btn-gold" style="font-size:.78rem;">Send Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Osei-Bonsu -->
+<div class="modal fade" id="modal-osei" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Faculty Profile</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="profile-header">
+          <div class="profile-avatar"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <div class="profile-name">Dr. Amara Osei-Bonsu</div>
+            <div class="profile-role">Associate Professor of Molecular Oncology · School of Medical Sciences</div>
+            <div class="profile-contact">
+              <div><i class="bi bi-envelope me-2"></i>a.osei-bonsu@aldenmere.ac.uk</div>
+              <div><i class="bi bi-geo-alt me-2"></i>Cancer Research Institute, Lab 2B</div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-section">Biography</div>
+        <p class="profile-bio">Amara Osei-Bonsu leads the Translational Oncology Laboratory at Aldenmere's Cancer Research Institute. Her group focuses on mRNA therapeutic platforms, tumour immunology, and the molecular basis of drug resistance in triple-negative breast cancer. She trained at Harvard Medical School and the Broad Institute before joining Aldenmere in 2018.</p>
+        <p class="profile-bio" style="margin-top:.75rem;">In 2024, her team published a landmark study in <em>Nature Medicine</em> on variant-adaptive mRNA vaccine architecture, attracting £18M in Wellcome Trust and UKRI funding. She is a recipient of the Lister Institute Research Prize and the CRUK Future Leaders in Cancer Research Award.</p>
+
+        <div class="profile-section">Research Interests</div>
+        <div>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>mRNA Therapeutics</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Tumour Immunology</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Drug Resistance</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Cancer Genomics</span>
+        </div>
+
+        <div class="profile-section">Selected Publications</div>
+        <div class="pub-item">Osei-Bonsu, A. et al. (2024). 'Variant-adaptive mRNA vaccine platforms for pandemic preparedness.' <span class="pub-journal">Nature Medicine</span>, 30, 1124–1138.</div>
+        <div class="pub-item">Osei-Bonsu, A. &amp; Chen, L. (2022). 'Overcoming PARP inhibitor resistance in BRCA1-mutant tumours.' <span class="pub-journal">Cancer Cell</span>, 41(8), 1402–1417.</div>
+        <div class="pub-item">Osei-Bonsu, A. (2020). 'Lipid nanoparticle formulation strategies for tumour-targeted RNA delivery.' <span class="pub-journal">Advanced Drug Delivery Reviews</span>, 162, 344–360.</div>
+
+        <div class="profile-section">Office Hours</div>
+        <div class="office-hours-grid">
+          <div class="oh-slot"><strong>Wednesday</strong>13:00 – 15:00</div>
+          <div class="oh-slot"><strong>By Appointment</strong>a.osei-bonsu@aldenmere.ac.uk</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Full CV (PDF)</a>
+        <a href="mailto:a.osei-bonsu@aldenmere.ac.uk" class="btn-gold" style="font-size:.78rem;">Send Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fontaine -->
+<div class="modal fade" id="modal-fontaine" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Faculty Profile</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="profile-header">
+          <div class="profile-avatar"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <div class="profile-name">Professor Isabelle Fontaine</div>
+            <div class="profile-role">Professor of Medieval European History · Faculty of Arts &amp; Humanities</div>
+            <div class="profile-contact">
+              <div><i class="bi bi-envelope me-2"></i>i.fontaine@aldenmere.ac.uk</div>
+              <div><i class="bi bi-geo-alt me-2"></i>Pemberton Building, Room 2.08</div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-section">Biography</div>
+        <p class="profile-bio">Isabelle Fontaine is a leading authority on medieval European society, gender, and the Church. Educated at the École Normale Supérieure and Cambridge, she has held visiting fellowships at the Institute for Advanced Study (Princeton), All Souls College Oxford, and the Bibliothèque nationale de France. Her prize-winning monograph <em>The Enclosed Garden</em> (Cambridge, 2019) transformed scholarly understanding of women's religious communities in 12th-century France.</p>
+
+        <div class="profile-section">Research Interests</div>
+        <div>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Medieval Religious Culture</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Gender &amp; the Church</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Manuscript Studies</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Memory &amp; Commemoration</span>
+        </div>
+
+        <div class="profile-section">Selected Publications</div>
+        <div class="pub-item">Fontaine, I. (2019). <em>The Enclosed Garden: Women, Devotion, and Authority in Twelfth-Century France</em>. Cambridge University Press. [Winner: RHS Gladstone Prize]</div>
+        <div class="pub-item">Fontaine, I. (2022). 'Relic Translation and the Politics of Sacred Memory in Capetian France.' <span class="pub-journal">Past &amp; Present</span>, 255(1), 3–42.</div>
+        <div class="pub-item">Fontaine, I. (ed.) (2021). <em>Women Writing History: Medieval Perspectives</em>. Boydell &amp; Brewer.</div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Full CV (PDF)</a>
+        <a href="mailto:i.fontaine@aldenmere.ac.uk" class="btn-gold" style="font-size:.78rem;">Send Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Meridith -->
+<div class="modal fade" id="modal-meridith" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Faculty Profile</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="profile-header">
+          <div class="profile-avatar"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <div class="profile-name">Professor James Meridith</div>
+            <div class="profile-role">Cavendish Professor of Theoretical Physics · Faculty of Natural Sciences</div>
+            <div class="profile-contact">
+              <div><i class="bi bi-envelope me-2"></i>j.meridith@aldenmere.ac.uk</div>
+              <div><i class="bi bi-geo-alt me-2"></i>Cavendish Physics Building, Office C4</div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-section">Biography</div>
+        <p class="profile-bio">James Meridith holds the Cavendish Professorship, one of Aldenmere's most distinguished endowed chairs. His work on non-perturbative methods in quantum field theory and the phenomenology of topological phases has been cited over 12,000 times. He is a Fellow of the Royal Society, a recipient of the Dirac Medal, and a corresponding member of the Académie des Sciences. He has advised CERN, the Institute for Advanced Study, and the Perimeter Institute.</p>
+
+        <div class="profile-section">Research Interests</div>
+        <div>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Quantum Field Theory</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Topological Phases</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>Quantum Biology</span>
+          <span class="research-interest"><i class="bi bi-diamond-fill"></i>String Theory</span>
+        </div>
+
+        <div class="profile-section">Selected Publications</div>
+        <div class="pub-item">Meridith, J. &amp; Liu, X. (2024). 'Quantum coherence and proton tunnelling in enzyme catalysis.' <span class="pub-journal">Nature Physics</span>, 20, 614–629.</div>
+        <div class="pub-item">Meridith, J. (2021). 'Non-perturbative effects in topologically ordered phases of matter.' <span class="pub-journal">Physical Review Letters</span>, 127, 061601.</div>
+        <div class="pub-item">Meridith, J. (2018). <em>Fields, Phases, and Topology: An Introduction to Modern Quantum Field Theory</em>. Oxford University Press.</div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn-navy" style="font-size:.78rem;">Full CV (PDF)</a>
+        <a href="mailto:j.meridith@aldenmere.ac.uk" class="btn-gold" style="font-size:.78rem;">Send Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pemberton stub -->
+<div class="modal fade" id="modal-pemberton" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Richard Pemberton — Reader in Constitutional Law</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p class="profile-bio">Richard Pemberton specialises in constitutional design, parliamentary procedure, and the constitutional consequences of devolution. He advises the House of Lords Constitution Committee and is the author of <em>Parliament and the Executive</em> (Hart, 2022).</p></div><div class="modal-footer"><a href="mailto:r.pemberton@aldenmere.ac.uk" class="btn-gold" style="font-size:.78rem;">Send Email</a></div></div></div></div>
+
+<!-- Footer & scripts (same pattern) -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">University of Aldenmere</div>
+        <div class="footer-tagline">Veritas et Lux — Truth and Light</div>
+        <div class="footer-socials mt-3">
+          <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2"><div class="footer-heading">Discover</div><ul class="footer-links"><li><a href="courses.html">Programmes</a></li><li><a href="faculty.html">Faculty</a></li><li><a href="students.html">Students</a></li><li><a href="events.html">Events</a></li><li><a href="index.html">Home</a></li></ul></div>
+    </div>
+    <hr class="footer-divider" />
+    <span class="footer-copy">© 2026 University of Aldenmere. All rights reserved.</span>
+  </div>
+</footer>
+
+<button id="backTop"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/shared.js"></script>
+</body>
+</html>
